@@ -16,9 +16,10 @@ contract Factory is IFactory{
 
   function createNewPool(address tokenA, address tokenB) external override returns (address pool) {
     require(tokenA != tokenB, "Error: Both Tokens are the same");
+    require(tokenA == address(0) || tokenB == address(0), "Error: Zero Address");
     require(liquidityPools[tokenA][tokenB] == address(0), "Error: Liquidity Pool already exists");
     newPool = new LiquidityPool(tokenA, tokenB);
-    address newPoolAddress = address(newPool);
+    address private newPoolAddress = address(newPool);
     liquidityPools[tokenA][tokenB] = newPoolAddress;
     liquidityPools[tokenB][tokenA] = newPoolAddress;
     allPoolAddress.push(newPoolAddress);
