@@ -9,32 +9,26 @@ import "./LiquidityPoolToken.sol";
 contract LiquidityPool is ILiquidityPool {
 
   address public factory;
-  address public immutable token0;
-  address public immutable token1;
+  address public token0;
+  address public token1;
 
-  LiquidityPoolToken public immutable receiptToken;
+  LiquidityPoolToken public receiptToken;
 
   uint256 private reserve0;
   uint256 private reserve1;
 
-  constructor(address tokenA, address tokenB) {
+  constructor() {
     factory = msg.sender;
-    token0 = tokenA;
-    token1 = tokenB;
-
-    string memory tokenAName = ERC20(tokenA).name();
-    string memory tokenBName = ERC20(tokenB).name();
-
-    string memory tokenASymbol = ERC20(tokenA).symbol();
-    string memory tokenBSymbol = ERC20(tokenB).symbol();
-
-    string memory _receiptTokenName = string.concat(tokenAName, tokenBName, "_LP_TOKEN");
-    string memory _receiptTokenSymbol = string.concat(tokenASymbol, tokenBSymbol, "_LP_TOKEN");
-
-    receiptToken = new LiquidityPoolToken(_receiptTokenName, _receiptTokenSymbol, 0);
   }
 
-  function swap(address _tokenIn, uint256 _amountIn) external override{
+  function initialize(address tokenA, address tokenB, string memory lpTokenName, string memory lpTokenSymbol) external {
+    require(msg.sender == factory, "Error: Access Denied");
+    token0 = tokenA;
+    token1 = tokenB;
+    receiptToken = new LiquidityPoolToken(lpTokenName, lpTokenSymbol, 0);
+  }
+
+  function swap(address _tokenIn, uint256 _amountIn) external{
     require(_tokenIn == address(token0) || _tokenIn == address(token1), "Error: Token cannot be swapped with this LP");
     require(_amountIn > 0, "Error: Amount to swap cannot be zero");
     require(IERC20(_tokenIn).allowance(msg.sender, address(this)) > _amountIn, "Error: Token Allowance must be greater than swap amount");
@@ -57,7 +51,7 @@ contract LiquidityPool is ILiquidityPool {
     IERC20(tokenOut).transferFrom(address(this), msg.sender, amountOut);
   }
 
-  function addLiquidity(uint256 token0AmountAdded, uint256 token1AmountAdded) external override returns (uint shares){
+  function addLiquidity(uint256 token0AmountAdded, uint256 token1AmountAdded) external returns (uint shares){
     IERC20(token0).transferFrom(msg.sender, address(this), token0AmountAdded);
     IERC20(token1).transferFrom(msg.sender, address(this), token1AmountAdded);
     
@@ -86,7 +80,7 @@ contract LiquidityPool is ILiquidityPool {
     return _shares;
   }
 
-  function removeLiquidity(uint256 shares) external override returns (uint amount0ToReturn, uint amount1ToReturn){
+  function removeLiquidity(uint256 shares) external returns (uint amount0ToReturn, uint amount1ToReturn){
     uint token0Balance = IERC20(token0).balanceOf(address(this));
     uint token1Balance = IERC20(token1).balanceOf(address(this));
 
