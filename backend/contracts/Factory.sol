@@ -1,39 +1,26 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.2;
 
-import './interfaces/FactoryInterface.sol';
+import './interfaces/IFactory.sol';
 import './LiquidityPool.sol';
 
 contract Factory is IFactory{
-  address public owner;
-  address public feeAddress;
   mapping(address => mapping(address => address)) public liquidityPools;
   address[] public allPoolAddress;
 
-  constructor(address theOwner) {
-    owner = theOwner;
-  }
+  constructor() { }
 
   function createNewPool(address tokenA, address tokenB) external override returns (address pool) {
     require(tokenA != tokenB, "Error: Both Tokens are the same");
     require(tokenA == address(0) || tokenB == address(0), "Error: Zero Address");
     require(liquidityPools[tokenA][tokenB] == address(0), "Error: Liquidity Pool already exists");
-    newPool = new LiquidityPool(tokenA, tokenB);
-    address private newPoolAddress = address(newPool);
+    LiquidityPool newPool = new LiquidityPool(tokenA, tokenB);
+    address newPoolAddress = address(newPool);
     liquidityPools[tokenA][tokenB] = newPoolAddress;
     liquidityPools[tokenB][tokenA] = newPoolAddress;
     allPoolAddress.push(newPoolAddress);
+    emit PoolCreated(tokenA, tokenB, newPoolAddress);
     return newPoolAddress;
-  }
-
-  function setFeeAddress(address newFeeAddress) external override{
-    require(msg.sender == owner, "Not Authorised");
-    feeAddress = newFeeAddress;
-  }
-
-  function setOwner(address newOwner) external override{
-    require(msg.sender == owner, "Not Authorised");
-    owner = newOwner;
   }
 }
 
