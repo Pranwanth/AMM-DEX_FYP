@@ -41,7 +41,7 @@ describe("Factory", function () {
     });
   });
   describe("createNewPool", function () {
-    it("should create new pool as valid tokens are passed in", async function () {
+    it("should emit pool address when given two valid tokens", async function () {
       const { factory } = await loadFixture(deployFactoryFixture);
       const factoryAddress = await factory.getAddress()
       const byteCode = LiquidityPool__factory.bytecode
@@ -49,6 +49,42 @@ describe("Factory", function () {
       await expect(factory.createNewPool(TEST_ADDRESSES[0], TEST_ADDRESSES[1]))
         .to.emit(factory, "PoolCreated")
         .withArgs(TEST_ADDRESSES[0], TEST_ADDRESSES[1], create2Address)
+    });
+    it("should revert zero address token", async function () {
+      const { factory } = await loadFixture(deployFactoryFixture);
+      await expect(factory.createNewPool('0x0000000000000000000000000000000000000000', TEST_ADDRESSES[1])).to.be.revertedWith("Error: Zero Address")
+    });
+    it("should revert duplicate tokens", async function () {
+      const { factory } = await loadFixture(deployFactoryFixture);
+      await expect(factory.createNewPool(TEST_ADDRESSES[1], TEST_ADDRESSES[1])).to.be.revertedWith("Error: Both Tokens are the same")
+    });
+    it("should revert if liquidity pool already exists", async function () {
+      const { factory } = await loadFixture(deployFactoryFixture);
+      await factory.createNewPool(TEST_ADDRESSES[0], TEST_ADDRESSES[1]);
+      await expect(factory.createNewPool(TEST_ADDRESSES[0], TEST_ADDRESSES[1])).to.be.revertedWith("Error: Liquidity Pool already exists")
+    });
+    it("should store pool address in liquidityPools mapping after creation", async function () {
+      const { factory } = await loadFixture(deployFactoryFixture);
+      const factoryAddress = await factory.getAddress()
+      const byteCode = LiquidityPool__factory.bytecode
+      const create2Address = getCreate2Address(factoryAddress, [...TEST_ADDRESSES], byteCode)
+      await factory.createNewPool(TEST_ADDRESSES[0], TEST_ADDRESSES[1]);
+      expect(await factory.liquidityPools(TEST_ADDRESSES[0], TEST_ADDRESSES[1])).to.be.equal(create2Address)
+    });
+    it("should have same pool address in liquidityPools mapping in both two directions after creation", async function () {
+      const { factory } = await loadFixture(deployFactoryFixture);
+      await factory.createNewPool(TEST_ADDRESSES[0], TEST_ADDRESSES[1]);
+      const poolAddress = await factory.liquidityPools(TEST_ADDRESSES[1], TEST_ADDRESSES[0]);
+      expect(await factory.liquidityPools(TEST_ADDRESSES[0], TEST_ADDRESSES[1])).to.be.equal(poolAddress);
+    });
+    it("should store pool address in allPoolAddress after creation", async function () {
+      const { factory } = await loadFixture(deployFactoryFixture);
+      const factoryAddress = await factory.getAddress()
+      const byteCode = LiquidityPool__factory.bytecode
+      const create2Address = getCreate2Address(factoryAddress, [...TEST_ADDRESSES], byteCode)
+      await factory.createNewPool(TEST_ADDRESSES[0], TEST_ADDRESSES[1]);
+      const firstPoolAddress = await factory.allPoolAddress(0);
+      expect(create2Address).to.be.equal(firstPoolAddress);
     });
   });
 });
