@@ -21,11 +21,14 @@ contract LiquidityPool is ILiquidityPool {
     factory = msg.sender;
   }
 
+  event LiquidityPoolTokenCreated(address owner, string tokenName, string tokenSymbol);
+
   function initialize(address tokenA, address tokenB, string memory lpTokenName, string memory lpTokenSymbol) external {
     require(msg.sender == factory, "Error: Access Denied");
     token0 = tokenA;
     token1 = tokenB;
     receiptToken = new LiquidityPoolToken(lpTokenName, lpTokenSymbol, 0);
+    emit LiquidityPoolTokenCreated(address(this), lpTokenName, lpTokenSymbol);
   }
 
   function swap(address _tokenIn, uint256 _amountIn) external{
@@ -81,16 +84,21 @@ contract LiquidityPool is ILiquidityPool {
   }
 
   function removeLiquidity(uint256 shares) external returns (uint amount0ToReturn, uint amount1ToReturn){
+    require(shares > 0, "Error: Zero Shares");
+    require(shares <= receiptToken.balanceOf(msg.sender), "Error: Invalid Shares");
+
     uint token0Balance = IERC20(token0).balanceOf(address(this));
     uint token1Balance = IERC20(token1).balanceOf(address(this));
 
     uint _totalSupply = receiptToken.totalSupply();
+    require(_totalSupply > 0, "Error: Total Supply is Zero");
 
     uint _amount0ToReturn = (shares * token0Balance) / _totalSupply;
     uint _amount1ToReturn = (shares * token1Balance) / _totalSupply;
 
     require(_amount0ToReturn > 0 && _amount1ToReturn > 0, "Error: Amount to be returned cannot be zero");
 
+    receiptToken.burn(msg.sender, shares);
     IERC20(token0).transferFrom(address(this), msg.sender, _amount0ToReturn);
     IERC20(token1).transferFrom(address(this), msg.sender, _amount1ToReturn);
 

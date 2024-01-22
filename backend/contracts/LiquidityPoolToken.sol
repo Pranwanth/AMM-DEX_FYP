@@ -15,4 +15,9 @@ contract LiquidityPoolToken is ERC20 {
     require(msg.sender == owner, "ErrorLPTokenContract: Not Authorised");
     _mint(account, value);
   }
+
+  function burn(address account, uint256 value) external {
+    require(msg.sender == owner, "ErrorLPTokenContract: Not Authorised");
+    _burn(account, value);
+  }
 }
