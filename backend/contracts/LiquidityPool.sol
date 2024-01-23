@@ -56,11 +56,10 @@ contract LiquidityPool is ILiquidityPool {
   }
 
   function addLiquidity(uint256 token0AmountAdded, uint256 token1AmountAdded) external returns (uint shares){
+    require(token0AmountAdded > 0 && token1AmountAdded > 0, "Error: Token Amount Added cannot be zero"); 
     IERC20(token0).transferFrom(msg.sender, address(this), token0AmountAdded);
     IERC20(token1).transferFrom(msg.sender, address(this), token1AmountAdded);
     
-    require(token0AmountAdded > 0 && token1AmountAdded > 0, "Error: Token Amount Added cannot be zero"); 
-
     if (reserve0 > 0 || reserve1 > 0) {
       require(reserve1 * token0AmountAdded == reserve0 * token1AmountAdded, "Error: Invalid Liquidity Quantites");
     }
