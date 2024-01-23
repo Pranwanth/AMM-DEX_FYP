@@ -19,7 +19,11 @@ describe("LiquidityPool", function () {
 
     const token0 = await ethers.deployContract("Lynx", trader1); // deployed with trader1 so the inital supply of 100 goes to trader 1
     const token1 = await ethers.deployContract("Obsidian", trader1);
-    return { pool, poolAddress, receiptToken, token0, token1, factory, trader1, trader2 };
+
+    const token0Address = await token0.getAddress()
+    const token1Address = await token1.getAddress()
+
+    return { pool, poolAddress, receiptToken, token0, token1, factory, trader1, trader2, token0Address, token1Address };
   }
 
   describe("creation of pool", function () {
@@ -28,10 +32,7 @@ describe("LiquidityPool", function () {
       expect(await pool.factory()).to.equal(factory);
     });
     it("initialise", async function () {
-      const { pool, poolAddress, receiptToken, token0, token1 } = await loadFixture(deployLiquidityPoolFixture);
-
-      const token0Address = await token0.getAddress();
-      const token1Address = await token1.getAddress();
+      const { pool, poolAddress, receiptToken, token0Address, token1Address } = await loadFixture(deployLiquidityPoolFixture);
 
       await expect(pool.initialise(token0Address, token1Address, receiptToken))
         .to.emit(pool, "LiquidityPoolTokenIntialised")
@@ -42,10 +43,7 @@ describe("LiquidityPool", function () {
   });
   describe("Adding Liquidity", function () {
     it("valid liqudity", async function () {
-      const { pool, poolAddress, receiptToken, token0, token1, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
-
-      const token0Address = await token0.getAddress();
-      const token1Address = await token1.getAddress();
+      const { pool, poolAddress, receiptToken, token0, token1, token0Address, token1Address, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
 
       await pool.initialise(token0Address, token1Address, receiptToken);
 
@@ -89,10 +87,7 @@ describe("LiquidityPool", function () {
       expect(await token1.balanceOf(poolAddress)).to.be.equal(BigInt(Number(token1AmountIn) * 2));
     })
     it("invalid liqudity: wrong ratio", async function () {
-      const { pool, poolAddress, receiptToken, token0, token1, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
-
-      const token0Address = await token0.getAddress();
-      const token1Address = await token1.getAddress();
+      const { pool, poolAddress, receiptToken, token0, token1, token0Address, token1Address, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
 
       await pool.initialise(token0Address, token1Address, receiptToken);
 
@@ -117,13 +112,11 @@ describe("LiquidityPool", function () {
         .to.be.revertedWith("Error: Invalid Liquidity Quantites");
     })
     it("invalid liqudity: insufficient balance", async function () {
-      const { pool, poolAddress, receiptToken, token0, token1, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
+      const { pool, poolAddress, receiptToken, token0, token1, token0Address, token1Address, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
 
-      const token0Address = await token0.getAddress();
-      const token1Address = await token1.getAddress();
 
-      await pool.initialise(token0Address, token1Address, receiptToken);
 
+      await pool.initialise(token0Address, token1Address, receiptToken)
       const token0AmountIn = ethers.parseUnits("50", 18);
       const token1AmountIn = ethers.parseUnits("50", 18);
 
@@ -138,14 +131,11 @@ describe("LiquidityPool", function () {
         .to.be.revertedWithCustomError(token0, "ERC20InsufficientBalance");
     })
     it("invalid liqudity: insufficient allowance", async function () {
-      const { pool, poolAddress, receiptToken, token0, token1, trader1 } = await loadFixture(deployLiquidityPoolFixture);
+      const { pool, poolAddress, receiptToken, token0, token1, token0Address, token1Address, trader1 } = await loadFixture(deployLiquidityPoolFixture);
 
-      const token0Address = await token0.getAddress();
-      const token1Address = await token1.getAddress();
 
-      await pool.initialise(token0Address, token1Address, receiptToken);
 
-      const token0AmountIn = ethers.parseUnits("50", 18);
+      await pool.initialise(token0Address, token1Address, receiptToken); const token0AmountIn = ethers.parseUnits("50", 18);
       const token1AmountIn = ethers.parseUnits("50", 18);
 
       await token1.connect(trader1).approve(poolAddress, token1AmountIn);
@@ -156,14 +146,11 @@ describe("LiquidityPool", function () {
   })
   describe("Removing Liquidity", function () {
     it("valid", async function () {
-      const { pool, poolAddress, receiptToken, token0, token1, trader1 } = await loadFixture(deployLiquidityPoolFixture);
-
-      const token0Address = await token0.getAddress();
-      const token1Address = await token1.getAddress();
+      const { pool, poolAddress, receiptToken, token0, token1, token0Address, token1Address, trader1 } = await loadFixture(deployLiquidityPoolFixture);
 
       await pool.initialise(token0Address, token1Address, receiptToken);
 
-      const token0AmountIn = ethers.parseUnits("50", 18);
+      const token0AmountIn = ethers.parseUnits("50", 18)
       const token1AmountIn = ethers.parseUnits("50", 18);
 
       await token0.connect(trader1).approve(poolAddress, token0AmountIn);
@@ -191,27 +178,21 @@ describe("LiquidityPool", function () {
         .withArgs(BigInt(halfSharesBN.toString(10)), BigInt(amount0ToReturnBN.toString(10)), BigInt(amount1ToReturnBN.toString(10)))
     })
     it("invalid: zero shares", async function () {
-      const { pool, receiptToken, token0, token1, trader1 } = await loadFixture(deployLiquidityPoolFixture);
-
-      const token0Address = await token0.getAddress();
-      const token1Address = await token1.getAddress();
+      const { pool, receiptToken, token0Address, token1Address, trader1 } = await loadFixture(deployLiquidityPoolFixture);
 
       await pool.initialise(token0Address, token1Address, receiptToken);
 
       await expect(pool.connect(trader1).removeLiquidity(0))
-        .to.revertedWith("Error: Zero Shares");
+        .to.revertedWith("Error: Zero Shares")
     })
     it("invalid: invalid shares balance", async function () {
-      const { pool, poolAddress, receiptToken, token0, token1, trader1 } = await loadFixture(deployLiquidityPoolFixture);
-
-      const token0Address = await token0.getAddress();
-      const token1Address = await token1.getAddress();
+      const { pool, poolAddress, receiptToken, token0, token1, token0Address, token1Address, trader1 } = await loadFixture(deployLiquidityPoolFixture);
 
       await pool.initialise(token0Address, token1Address, receiptToken);
 
       const shares = ethers.parseUnits("50", 18);
 
-      // trying to remove without adding liquidity
+      // trying to remove without adding liquidit      
       await expect(pool.connect(trader1).removeLiquidity(shares))
         .to.revertedWith("Error: Invalid Shares");
 
