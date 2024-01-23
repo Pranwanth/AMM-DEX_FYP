@@ -28,9 +28,9 @@ contract Factory is IFactory{
     string memory receiptTokenName = string.concat("LPTOKEN", allPoolLen);
     string memory receiptTokenSymbol = string.concat("LP", allPoolLen);
 
-    LiquidityPoolToken receiptToken = new LiquidityPoolToken(receiptTokenName, receiptTokenSymbol, 0);
+    LiquidityPoolToken receiptToken = new LiquidityPoolToken(pool, receiptTokenName, receiptTokenSymbol, 0);
 
-    ILiquidityPool(pool).initialize(tokenA, tokenB, receiptToken);
+    ILiquidityPool(pool).initialise(tokenA, tokenB, receiptToken);
     liquidityPools[tokenA][tokenB] = pool;
     liquidityPools[tokenB][tokenA] = pool;
     allPoolAddress.push(pool);
