@@ -23,6 +23,7 @@ contract LiquidityPool is ILiquidityPool {
 
   event LiquidityPoolTokenIntialised(address owner, string tokenName, string tokenSymbol);
   event AddLiquidity(address liquidityProvider, uint token0AmountIn, uint token1AmountIn, uint shares);
+  event RemoveLiquidity(uint shareBurned, uint token0AmountOut, uint token1AmountOut);
 
   function initialise(address tokenA, address tokenB, LiquidityPoolToken _receiptToken) external {
     require(msg.sender == factory, "Error: Access Denied");
@@ -100,9 +101,11 @@ contract LiquidityPool is ILiquidityPool {
     require(_amount0ToReturn > 0 && _amount1ToReturn > 0, "Error: Amount to be returned cannot be zero");
 
     receiptToken.burn(msg.sender, shares);
-    IERC20(token0).transferFrom(address(this), msg.sender, _amount0ToReturn);
-    IERC20(token1).transferFrom(address(this), msg.sender, _amount1ToReturn);
+    bool transfer0Success = IERC20(token0).transfer(msg.sender, _amount0ToReturn);
+    bool transfer1Success = IERC20(token1).transfer(msg.sender, _amount1ToReturn);
+    require(transfer0Success && transfer1Success, "Error: Transfer Failed");
 
+    emit RemoveLiquidity(shares, _amount0ToReturn, _amount1ToReturn);
     return (_amount0ToReturn, _amount1ToReturn);
   }
 

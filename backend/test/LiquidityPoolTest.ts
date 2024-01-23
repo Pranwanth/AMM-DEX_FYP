@@ -1,6 +1,7 @@
 import { loadFixture, } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import BigNumber from "bignumber.js"
 
 describe("LiquidityPool", function () {
   // We define a fixture to reuse the same setup in every test.
@@ -42,7 +43,6 @@ describe("LiquidityPool", function () {
   describe("Adding Liquidity", function () {
     it("valid liqudity", async function () {
       const { pool, poolAddress, receiptToken, token0, token1, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
-
 
       const token0Address = await token0.getAddress();
       const token1Address = await token1.getAddress();
@@ -91,7 +91,6 @@ describe("LiquidityPool", function () {
     it("invalid liqudity: wrong ratio", async function () {
       const { pool, poolAddress, receiptToken, token0, token1, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
 
-
       const token0Address = await token0.getAddress();
       const token1Address = await token1.getAddress();
 
@@ -120,7 +119,6 @@ describe("LiquidityPool", function () {
     it("invalid liqudity: insufficient balance", async function () {
       const { pool, poolAddress, receiptToken, token0, token1, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
 
-
       const token0Address = await token0.getAddress();
       const token1Address = await token1.getAddress();
 
@@ -142,7 +140,6 @@ describe("LiquidityPool", function () {
     it("invalid liqudity: insufficient allowance", async function () {
       const { pool, poolAddress, receiptToken, token0, token1, trader1 } = await loadFixture(deployLiquidityPoolFixture);
 
-
       const token0Address = await token0.getAddress();
       const token1Address = await token1.getAddress();
 
@@ -158,9 +155,8 @@ describe("LiquidityPool", function () {
     })
   })
   describe("Removing Liquidity", function () {
-    it("invalid: no liquidity", async function () {
+    it("valid", async function () {
       const { pool, poolAddress, receiptToken, token0, token1, trader1 } = await loadFixture(deployLiquidityPoolFixture);
-
 
       const token0Address = await token0.getAddress();
       const token1Address = await token1.getAddress();
@@ -170,7 +166,73 @@ describe("LiquidityPool", function () {
       const token0AmountIn = ethers.parseUnits("50", 18);
       const token1AmountIn = ethers.parseUnits("50", 18);
 
+      await token0.connect(trader1).approve(poolAddress, token0AmountIn);
       await token1.connect(trader1).approve(poolAddress, token1AmountIn);
+
+      await pool.connect(trader1).addLiquidity(token0AmountIn, token1AmountIn)
+
+      const shares = await receiptToken.balanceOf(trader1)
+      const sharesBN = BigNumber(shares.toString(10))
+      const halfSharesBN = sharesBN.div(2)
+
+      const totalSupply = await receiptToken.totalSupply()
+      const token0Balance = await token0.balanceOf(poolAddress)
+      const token1Balance = await token1.balanceOf(poolAddress)
+
+      const totalSupplyBN = BigNumber(totalSupply.toString(10))
+      const token0BalanceBN = BigNumber(token0Balance.toString(10))
+      const token1BalanceBN = BigNumber(token1Balance.toString(10))
+
+      const amount0ToReturnBN = halfSharesBN.multipliedBy(token0BalanceBN).div(totalSupplyBN).toNumber()
+      const amount1ToReturnBN = halfSharesBN.multipliedBy(token1BalanceBN).div(totalSupplyBN).toNumber()
+
+      await expect(pool.connect(trader1).removeLiquidity(BigInt(halfSharesBN.toString(10))))
+        .to.emit(pool, "RemoveLiquidity")
+        .withArgs(BigInt(halfSharesBN.toString(10)), BigInt(amount0ToReturnBN.toString(10)), BigInt(amount1ToReturnBN.toString(10)))
+    })
+    it("invalid: zero shares", async function () {
+      const { pool, receiptToken, token0, token1, trader1 } = await loadFixture(deployLiquidityPoolFixture);
+
+      const token0Address = await token0.getAddress();
+      const token1Address = await token1.getAddress();
+
+      await pool.initialise(token0Address, token1Address, receiptToken);
+
+      await expect(pool.connect(trader1).removeLiquidity(0))
+        .to.revertedWith("Error: Zero Shares");
+    })
+    it("invalid: invalid shares balance", async function () {
+      const { pool, poolAddress, receiptToken, token0, token1, trader1 } = await loadFixture(deployLiquidityPoolFixture);
+
+      const token0Address = await token0.getAddress();
+      const token1Address = await token1.getAddress();
+
+      await pool.initialise(token0Address, token1Address, receiptToken);
+
+      const shares = ethers.parseUnits("50", 18);
+
+      // trying to remove without adding liquidity
+      await expect(pool.connect(trader1).removeLiquidity(shares))
+        .to.revertedWith("Error: Invalid Shares");
+
+      const token0AmountIn = ethers.parseUnits("50", 18);
+      const token1AmountIn = ethers.parseUnits("50", 18);
+
+      await token0.connect(trader1).approve(poolAddress, token0AmountIn);
+      await token1.connect(trader1).approve(poolAddress, token1AmountIn);
+
+      await pool.connect(trader1).addLiquidity(token0AmountIn, token1AmountIn)
+
+      const invalidShares = ethers.parseUnits("100", 18)
+
+      // trying to remove more than shares in posession
+      await expect(pool.connect(trader1).removeLiquidity(invalidShares))
+        .to.be.revertedWith("Error: Invalid Shares")
+    })
+  })
+  describe("Swap", function () {
+    it("valid swap", async function () {
+
     })
   })
 });
