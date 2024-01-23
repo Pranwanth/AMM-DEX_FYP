@@ -22,6 +22,7 @@ contract LiquidityPool is ILiquidityPool {
   }
 
   event LiquidityPoolTokenCreated(address owner, string tokenName, string tokenSymbol);
+  event AddLiquidity(address liquidityProvider, uint token0AmountIn, uint token1AmountIn, uint shares);
 
   function initialize(address tokenA, address tokenB, string memory lpTokenName, string memory lpTokenSymbol) external {
     require(msg.sender == factory, "Error: Access Denied");
@@ -80,6 +81,7 @@ contract LiquidityPool is ILiquidityPool {
     reserve0 = IERC20(token0).balanceOf(address(this));
     reserve1 = IERC20(token1).balanceOf(address(this));
     
+    emit AddLiquidity(msg.sender, token0AmountAdded, token1AmountAdded, _shares);
     return _shares;
   }
 
