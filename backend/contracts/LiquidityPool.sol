@@ -24,12 +24,12 @@ contract LiquidityPool is ILiquidityPool {
   event LiquidityPoolTokenCreated(address owner, string tokenName, string tokenSymbol);
   event AddLiquidity(address liquidityProvider, uint token0AmountIn, uint token1AmountIn, uint shares);
 
-  function initialize(address tokenA, address tokenB, string memory lpTokenName, string memory lpTokenSymbol) external {
+  function initialize(address tokenA, address tokenB, LiquidityPoolToken _receiptToken) external {
     require(msg.sender == factory, "Error: Access Denied");
     token0 = tokenA;
     token1 = tokenB;
-    receiptToken = new LiquidityPoolToken(lpTokenName, lpTokenSymbol, 0);
-    emit LiquidityPoolTokenCreated(address(this), lpTokenName, lpTokenSymbol);
+    receiptToken = _receiptToken;
+    emit LiquidityPoolTokenCreated(address(this), receiptToken.name(), receiptToken.symbol());
   }
 
   function swap(address _tokenIn, uint256 _amountIn) external{
