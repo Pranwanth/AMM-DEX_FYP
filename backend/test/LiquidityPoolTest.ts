@@ -212,7 +212,7 @@ describe("LiquidityPool", function () {
     })
   })
   describe("Swap", function () {
-    it("valid: correct tokens and amounts", async function () {
+    it("valid: trade token0 for token1", async function () {
       const { pool, receiptToken, poolAddress, token0, token1, token0Address, token1Address, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
 
       await pool.initialise(token0Address, token1Address, receiptToken);
@@ -232,10 +232,28 @@ describe("LiquidityPool", function () {
       const randNum = Math.floor(Math.random() * 25)
       const tradeSize = ethers.parseUnits(`${randNum}`, 18)
       await token0.connect(trader2).approve(poolAddress, tradeSize)
+
+      const expectedReserve0 = await token0.balanceOf(poolAddress)
+      const expectedReserve1 = await token1.balanceOf(poolAddress)
+
+      const expectedReserve0BN = BigNumber(expectedReserve0.toString(10))
+      const expectedReserve1BN = BigNumber(expectedReserve1.toString(10))
+      const tradeSizeBN = BigNumber(tradeSize.toString(10))
+      const tradeSizeWithFeeBN = tradeSizeBN.multipliedBy(997).dividedBy(1000)
+      const xyBN = expectedReserve0BN.multipliedBy(expectedReserve1BN)
+      const yPlusDyBN = expectedReserve0BN.plus(tradeSizeWithFeeBN)
+      const expectedAmountBN = expectedReserve1BN.minus(xyBN.dividedBy(yPlusDyBN).decimalPlaces(0, 1))
+
+      const initialTrader2Token1BalanceBN = BigNumber((await token1.balanceOf(trader2)).toString(10))
+
+      await token0.connect(trader2).approve(poolAddress, tradeSize)
       await expect(pool.connect(trader2).swap(token0, tradeSize))
+        .to.emit(pool, "Swap")
+        .withArgs(token0Address, tradeSize, token1Address, BigInt(expectedAmountBN.decimalPlaces(0, 1).toString(10)))
 
+      const afterSwapTrader2Token1BalanceBN = BigNumber((await token1.balanceOf(trader2)).toString(10))
 
-
+      expect(afterSwapTrader2Token1BalanceBN.minus(initialTrader2Token1BalanceBN).isEqualTo(expectedAmountBN.decimalPlaces(0, 1)))
     })
     it("invalid swap: wrong token", async function () {
       const { pool, receiptToken, token0Address, token1Address, trader1 } = await loadFixture(deployLiquidityPoolFixture);

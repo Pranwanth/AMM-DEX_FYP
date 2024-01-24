@@ -6,6 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./interfaces/ILiquidityPool.sol";
 import "./LiquidityPoolToken.sol";
 
+import "hardhat/console.sol";
+
 contract LiquidityPool is ILiquidityPool {
 
   address public factory;
@@ -24,6 +26,7 @@ contract LiquidityPool is ILiquidityPool {
   event LiquidityPoolTokenIntialised(address owner, string tokenName, string tokenSymbol);
   event AddLiquidity(address liquidityProvider, uint token0AmountIn, uint token1AmountIn, uint shares);
   event RemoveLiquidity(uint shareBurned, uint token0AmountOut, uint token1AmountOut);
+  event Swap(address tokenIn, uint amountIn, address tokenOut, uint amountOut);
 
   function initialise(address tokenA, address tokenB, LiquidityPoolToken _receiptToken) external {
     require(msg.sender == factory, "Error: Access Denied");
@@ -53,7 +56,9 @@ contract LiquidityPool is ILiquidityPool {
       reserve0 -= amountOut;
     }
 
-    IERC20(tokenOut).transferFrom(address(this), msg.sender, amountOut);
+    IERC20(tokenOut).transfer(msg.sender, amountOut);
+    
+    emit Swap(tokenIn, _amountIn, tokenOut, amountOut);
   }
 
   function addLiquidity(uint256 token0AmountAdded, uint256 token1AmountAdded) external returns (uint shares){
