@@ -36,7 +36,7 @@ contract LiquidityPool is ILiquidityPool {
   function swap(address _tokenIn, uint256 _amountIn) external{
     require(_tokenIn == address(token0) || _tokenIn == address(token1), "Error: Token cannot be swapped with this LP");
     require(_amountIn > 0, "Error: Amount to swap cannot be zero");
-    require(IERC20(_tokenIn).allowance(msg.sender, address(this)) > _amountIn, "Error: Token Allowance must be greater than swap amount");
+    require(IERC20(_tokenIn).allowance(msg.sender, address(this)) >= _amountIn, "Error: Token Allowance must be greater than or equal to swap amount");
 
     (address tokenIn, address tokenOut, uint256 reserveIn, uint256 reserveOut) = _tokenIn == address(token0) ? (token0, token1, reserve0, reserve1) : (token1, token0, reserve1, reserve0);
         

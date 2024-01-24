@@ -192,7 +192,7 @@ describe("LiquidityPool", function () {
 
       const shares = ethers.parseUnits("50", 18);
 
-      // trying to remove without adding liquidit      
+      // trying to remove without adding liquidity      
       await expect(pool.connect(trader1).removeLiquidity(shares))
         .to.revertedWith("Error: Invalid Shares");
 
@@ -212,8 +212,70 @@ describe("LiquidityPool", function () {
     })
   })
   describe("Swap", function () {
-    it("valid swap", async function () {
+    it("valid: correct tokens and amounts", async function () {
+      const { pool, receiptToken, poolAddress, token0, token1, token0Address, token1Address, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
 
+      await pool.initialise(token0Address, token1Address, receiptToken);
+
+      const token0AmountIn = ethers.parseUnits("50", 18);
+      const token1AmountIn = ethers.parseUnits("50", 18);
+
+      await token0.connect(trader1).approve(poolAddress, token0AmountIn);
+      await token1.connect(trader1).approve(poolAddress, token1AmountIn);
+
+      await pool.connect(trader1).addLiquidity(token0AmountIn, token1AmountIn)
+
+      await token0.connect(trader1).transfer(trader2, token0AmountIn);
+      await token1.connect(trader1).transfer(trader2, token1AmountIn);
+
+      // trade1
+      const randNum = Math.floor(Math.random() * 25)
+      const tradeSize = ethers.parseUnits(`${randNum}`, 18)
+      await token0.connect(trader2).approve(poolAddress, tradeSize)
+      await expect(pool.connect(trader2).swap(token0, tradeSize))
+
+
+
+    })
+    it("invalid swap: wrong token", async function () {
+      const { pool, receiptToken, token0Address, token1Address, trader1 } = await loadFixture(deployLiquidityPoolFixture);
+
+      await pool.initialise(token0Address, token1Address, receiptToken);
+
+      const amountIn = ethers.parseUnits("50", 18);
+
+      await expect(pool.connect(trader1).swap('0x1000000000000000000000000000000000000000', amountIn))
+        .to.be.revertedWith("Error: Token cannot be swapped with this LP")
+    })
+    it("invalid swap: amountIn is zero", async function () {
+      const { pool, receiptToken, token0Address, token1Address, trader1 } = await loadFixture(deployLiquidityPoolFixture);
+
+      await pool.initialise(token0Address, token1Address, receiptToken);
+
+      await expect(pool.connect(trader1).swap(token0Address, 0))
+        .to.be.revertedWith("Error: Amount to swap cannot be zero")
+    })
+    it("invalid swap: too little allowance", async function () {
+      const { pool, receiptToken, token0, token1, poolAddress, token0Address, token1Address, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
+
+      await pool.initialise(token0Address, token1Address, receiptToken);
+
+      const token0AmountIn = ethers.parseUnits("50", 18);
+      const token1AmountIn = ethers.parseUnits("50", 18);
+
+      await token0.connect(trader1).approve(poolAddress, token0AmountIn);
+      await token1.connect(trader1).approve(poolAddress, token1AmountIn);
+
+      await pool.connect(trader1).addLiquidity(token0AmountIn, token1AmountIn)
+
+      // transfer tokens to trader2
+      await token0.connect(trader1).transfer(trader2, token0AmountIn)
+
+      const allowanceAmount = ethers.parseUnits("25", 18);
+      await token0.connect(trader2).approve(poolAddress, allowanceAmount);
+
+      await expect(pool.connect(trader1).swap(token0Address, token0AmountIn))
+        .to.be.revertedWith("Error: Token Allowance must be greater than or equal to swap amount")
     })
   })
 });
