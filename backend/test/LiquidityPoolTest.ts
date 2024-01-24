@@ -258,6 +258,52 @@ describe("LiquidityPool", function () {
         expect(afterSwapTrader2Token1BalanceBN.minus(initialTrader2Token1BalanceBN).isEqualTo(expectedAmountBN.decimalPlaces(0, 1)))
       }
     })
+    it("valid: trade token1 for token0", async function () {
+      const { pool, receiptToken, poolAddress, token0, token1, token0Address, token1Address, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
+
+      await pool.initialise(token0Address, token1Address, receiptToken);
+
+      const token0AmountIn = ethers.parseUnits("50", 18);
+      const token1AmountIn = ethers.parseUnits("50", 18);
+
+      await token0.connect(trader1).approve(poolAddress, token0AmountIn);
+      await token1.connect(trader1).approve(poolAddress, token1AmountIn);
+
+      await pool.connect(trader1).addLiquidity(token0AmountIn, token1AmountIn)
+
+      await token0.connect(trader1).transfer(trader2, token0AmountIn);
+      await token1.connect(trader1).transfer(trader2, token1AmountIn);
+
+      // testing 5 trades of token1 for token0
+      for (let trades = 0; trades < 5; trades++) {
+        const randNum = Math.floor(Math.random() * 5 + 1)
+        const tradeSize = ethers.parseUnits(`${randNum}`, 18)
+        await token1.connect(trader2).approve(poolAddress, tradeSize)
+
+        const expectedReserve0 = await token0.balanceOf(poolAddress)
+        const expectedReserve1 = await token1.balanceOf(poolAddress)
+
+        const expectedReserve0BN = BigNumber(expectedReserve0.toString(10))
+        const expectedReserve1BN = BigNumber(expectedReserve1.toString(10))
+        const tradeSizeBN = BigNumber(tradeSize.toString(10))
+        const tradeSizeWithFeeBN = tradeSizeBN.multipliedBy(997).dividedBy(1000)
+
+        const xyBN = expectedReserve0BN.multipliedBy(expectedReserve1BN)
+        const yPlusDyBN = expectedReserve1BN.plus(tradeSizeWithFeeBN)
+        const expectedAmountBN = expectedReserve0BN.minus(xyBN.dividedBy(yPlusDyBN).decimalPlaces(0, 1))
+
+        const initialTrader2Token0BalanceBN = BigNumber((await token0.balanceOf(trader2)).toString(10))
+
+        await token0.connect(trader2).approve(poolAddress, tradeSize)
+        await expect(pool.connect(trader2).swap(token1, tradeSize))
+          .to.emit(pool, "Swap")
+          .withArgs(token1Address, tradeSize, token0Address, BigInt(expectedAmountBN.decimalPlaces(0, 1).toString(10)))
+
+        const afterSwapTrader2Token0BalanceBN = BigNumber((await token0.balanceOf(trader2)).toString(10))
+
+        expect(afterSwapTrader2Token0BalanceBN.minus(initialTrader2Token0BalanceBN).isEqualTo(expectedAmountBN.decimalPlaces(0, 1)))
+      }
+    })
     it("invalid swap: wrong token", async function () {
       const { pool, receiptToken, token0Address, token1Address, trader1 } = await loadFixture(deployLiquidityPoolFixture);
 
