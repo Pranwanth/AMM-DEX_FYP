@@ -37,11 +37,14 @@ contract LiquidityPool is ILiquidityPool {
   }
 
   function swap(address _tokenIn, uint256 _amountIn) external{
+
     require(_tokenIn == address(token0) || _tokenIn == address(token1), "Error: Token cannot be swapped with this LP");
     require(_amountIn > 0, "Error: Amount to swap cannot be zero");
     require(IERC20(_tokenIn).allowance(msg.sender, address(this)) >= _amountIn, "Error: Token Allowance must be greater than or equal to swap amount");
 
-    (address tokenIn, address tokenOut, uint256 reserveIn, uint256 reserveOut) = _tokenIn == address(token0) ? (token0, token1, reserve0, reserve1) : (token1, token0, reserve1, reserve0);
+    (address tokenIn, address tokenOut, uint256 reserveIn, uint256 reserveOut) = _tokenIn == address(token0) 
+    ? (token0, token1, reserve0, reserve1) 
+    : (token1, token0, reserve1, reserve0);
         
     IERC20(tokenIn).transferFrom(msg.sender, address(this), _amountIn);
 
@@ -62,7 +65,11 @@ contract LiquidityPool is ILiquidityPool {
   }
 
   function addLiquidity(uint256 token0AmountAdded, uint256 token1AmountAdded) external returns (uint shares){
-    require(token0AmountAdded > 0 && token1AmountAdded > 0, "Error: Token Amount Added cannot be zero"); 
+
+    require(token0AmountAdded > 0 && token1AmountAdded > 0, "Error: Token Amount Added cannot be zero");
+    require(IERC20(token0).allowance(msg.sender, address(this)) >= token0AmountAdded, "Error: Token Allowance must be greater than or equal to liquidity"); 
+    require(IERC20(token1).allowance(msg.sender, address(this)) >= token1AmountAdded, "Error: Token Allowance must be greater than or equal to liquidity"); 
+    
     IERC20(token0).transferFrom(msg.sender, address(this), token0AmountAdded);
     IERC20(token1).transferFrom(msg.sender, address(this), token1AmountAdded);
     
@@ -91,14 +98,15 @@ contract LiquidityPool is ILiquidityPool {
   }
 
   function removeLiquidity(uint256 shares) external returns (uint amount0ToReturn, uint amount1ToReturn){
+
     require(shares > 0, "Error: Zero Shares");
     require(shares <= receiptToken.balanceOf(msg.sender), "Error: Invalid Shares");
 
-    uint token0Balance = IERC20(token0).balanceOf(address(this));
-    uint token1Balance = IERC20(token1).balanceOf(address(this));
-
     uint _totalSupply = receiptToken.totalSupply();
     require(_totalSupply > 0, "Error: Total Supply is Zero");
+
+    uint token0Balance = IERC20(token0).balanceOf(address(this));
+    uint token1Balance = IERC20(token1).balanceOf(address(this));
 
     uint _amount0ToReturn = (shares * token0Balance) / _totalSupply;
     uint _amount1ToReturn = (shares * token1Balance) / _totalSupply;
@@ -106,6 +114,10 @@ contract LiquidityPool is ILiquidityPool {
     require(_amount0ToReturn > 0 && _amount1ToReturn > 0, "Error: Amount to be returned cannot be zero");
 
     receiptToken.burn(msg.sender, shares);
+
+    reserve0 = token0Balance - amount0ToReturn;
+    reserve1 = token1Balance - amount1ToReturn;
+
     bool transfer0Success = IERC20(token0).transfer(msg.sender, _amount0ToReturn);
     bool transfer1Success = IERC20(token1).transfer(msg.sender, _amount1ToReturn);
     require(transfer0Success && transfer1Success, "Error: Transfer Failed");
