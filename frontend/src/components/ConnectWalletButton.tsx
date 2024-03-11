@@ -31,9 +31,7 @@ const ConnectWalletButton = (props: Props) => {
     </div>
   ) : (
     <button
-      className={`w-full text-center font-bold bg-sky-900 text-white p-4 rounded ${
-        className ?? ""
-      }`}
+      className={`w-full text-center font-bold bg-sky-900 text-white p-4 rounded ${className ?? ""}`}
       onClick={() => connect({ connector: injected() })}
     >
       Connect Wallet
