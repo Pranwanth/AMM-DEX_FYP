@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ChooseTokenButton from '../SwapInput/ChooseTokenButton'
+import PlusIcon from '../../assets/PlusIcon'
 
 const AddLiquidityTab = () => {
 
@@ -23,12 +24,13 @@ const AddLiquidityTab = () => {
   }
 
   return (
-    <div>
-      <div className="flex text-xl h-32 p-4 bg-sky-50 rounded-md my-2 text-sky-950 relative">
+    <div className="relative">
+      <div className="flex text-xl h-32 p-4 bg-sky-50 rounded-md my-2 text-sky-950">
         <input type="number" value={tokenOneValue} min="0" onChange={event => onInputChange("tokenOne", event.target.value)} className="flex w-full bg-transparent rounded-md text-2xl focus-visible:outline-none" />
         <ChooseTokenButton type="addLiquidityTokenOne" />
       </div>
-      <div className="flex text-xl h-32 p-4 bg-sky-50 rounded-md my-2 text-sky-950 relative">
+      <PlusIcon />
+      <div className="flex text-xl h-32 p-4 bg-sky-50 rounded-md my-2 text-sky-950">
         <input type="number" value={tokenTwoValue} min="0" onChange={event => onInputChange("tokenTwo", event.target.value)} className="block w-full bg-transparent rounded-md text-2xl focus-visible:outline-none" />
         <ChooseTokenButton type="addLiquidityTokenTwo" />
       </div>
