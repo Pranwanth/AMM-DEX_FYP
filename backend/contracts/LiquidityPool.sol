@@ -3,10 +3,9 @@ pragma solidity 0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./interfaces/ILiquidityPool.sol";
 import "./LiquidityPoolToken.sol";
-
-import "hardhat/console.sol";
 
 contract LiquidityPool is ILiquidityPool {
 
@@ -46,7 +45,7 @@ contract LiquidityPool is ILiquidityPool {
     ? (token0, token1, reserve0, reserve1) 
     : (token1, token0, reserve1, reserve0);
         
-    IERC20(tokenIn).transferFrom(msg.sender, address(this), _amountIn);
+    SafeERC20.safeTransferFrom(IERC20(tokenIn), msg.sender, address(this), _amountIn);
 
     uint256 amountInWithFee = (_amountIn * 997)/1000; // 0.3% fee
     uint256 amountOut = reserveOut - (reserveIn * reserveOut)/(reserveIn + amountInWithFee);
@@ -59,7 +58,7 @@ contract LiquidityPool is ILiquidityPool {
       reserve0 -= amountOut;
     }
 
-    IERC20(tokenOut).transfer(msg.sender, amountOut);
+    SafeERC20.safeTransfer(IERC20(tokenOut), msg.sender, amountOut);
     
     emit Swap(tokenIn, _amountIn, tokenOut, amountOut);
   }
@@ -70,8 +69,8 @@ contract LiquidityPool is ILiquidityPool {
     require(IERC20(token0).allowance(msg.sender, address(this)) >= token0AmountAdded, "Error: Token Allowance must be greater than or equal to liquidity"); 
     require(IERC20(token1).allowance(msg.sender, address(this)) >= token1AmountAdded, "Error: Token Allowance must be greater than or equal to liquidity"); 
     
-    IERC20(token0).transferFrom(msg.sender, address(this), token0AmountAdded);
-    IERC20(token1).transferFrom(msg.sender, address(this), token1AmountAdded);
+    SafeERC20.safeTransferFrom(IERC20(token0), msg.sender, address(this), token0AmountAdded);
+    SafeERC20.safeTransferFrom(IERC20(token1), msg.sender, address(this), token1AmountAdded);
     
     if (reserve0 > 0 || reserve1 > 0) {
       require(reserve1 * token0AmountAdded == reserve0 * token1AmountAdded, "Error: Invalid Liquidity Quantites");
@@ -118,9 +117,8 @@ contract LiquidityPool is ILiquidityPool {
     reserve0 = token0Balance - amount0ToReturn;
     reserve1 = token1Balance - amount1ToReturn;
 
-    bool transfer0Success = IERC20(token0).transfer(msg.sender, _amount0ToReturn);
-    bool transfer1Success = IERC20(token1).transfer(msg.sender, _amount1ToReturn);
-    require(transfer0Success && transfer1Success, "Error: Transfer Failed");
+    SafeERC20.safeTransfer(IERC20(token0), msg.sender, _amount0ToReturn);
+    SafeERC20.safeTransfer(IERC20(token1), msg.sender, _amount1ToReturn);    
 
     emit RemoveLiquidity(shares, _amount0ToReturn, _amount1ToReturn);
     return (_amount0ToReturn, _amount1ToReturn);
