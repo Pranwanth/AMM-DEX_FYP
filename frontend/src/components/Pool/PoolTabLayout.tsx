@@ -1,7 +1,11 @@
 import { useState } from 'react'
 import AddLiquidityTab from './AddLiquidityTab'
+import { useAccount } from 'wagmi'
+import AddLiquidityButton from './AddLiquidityButton'
+import ConnectWalletButton from '../ConnectWalletButton'
 
 const PoolTabLayout = () => {
+  const { isConnected } = useAccount()
   const [activeTab, setActiveTab] = useState(0)
 
   return (
@@ -16,6 +20,7 @@ const PoolTabLayout = () => {
         {/* {activeTab === 1 && <RemoveLiquidityTab />} */}
         {/* {activeTab === 2 && <ActiveLiquidityTab />} */}
       </section>
+      {isConnected ? <AddLiquidityButton /> : <ConnectWalletButton />}
     </div>
   )
 }
