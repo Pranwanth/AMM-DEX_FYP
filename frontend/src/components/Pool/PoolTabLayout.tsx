@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import AddLiquidityTab from './AddLiquidityTab'
 import { useAccount } from 'wagmi'
-import AddLiquidityButton from './AddLiquidityButton'
+import DepositButton from './DepositButton'
 import ConnectWalletButton from '../ConnectWalletButton'
 
 const PoolTabLayout = () => {
@@ -11,8 +11,8 @@ const PoolTabLayout = () => {
   return (
     <div className="mt-8">
       <header className="text-sky-950">
-        <button onClick={() => setActiveTab(0)} className={`text-xl mx-4 h-full p-2 rounded-xl ${activeTab === 0 && "bg-sky-900 text-white"}`}>Add</button>
-        <button onClick={() => setActiveTab(1)} className={`text-xl mr-4 h-full p-2 rounded-xl ${activeTab === 1 && "bg-sky-900 text-white"}`}>Remove</button>
+        <button onClick={() => setActiveTab(0)} className={`text-xl mx-4 h-full p-2 rounded-xl ${activeTab === 0 && "bg-sky-900 text-white"}`}>Deposit</button>
+        <button onClick={() => setActiveTab(1)} className={`text-xl mr-4 h-full p-2 rounded-xl ${activeTab === 1 && "bg-sky-900 text-white"}`}>Withdraw</button>
         <button onClick={() => setActiveTab(2)} className={`text-xl mr-4 h-full p-2 rounded-xl ${activeTab === 2 && "bg-sky-900 text-white"}`}>Active</button>
       </header>
       <section className="mt-4">
@@ -20,7 +20,7 @@ const PoolTabLayout = () => {
         {/* {activeTab === 1 && <RemoveLiquidityTab />} */}
         {/* {activeTab === 2 && <ActiveLiquidityTab />} */}
       </section>
-      {isConnected ? <AddLiquidityButton /> : <ConnectWalletButton />}
+      {isConnected ? <DepositButton /> : <ConnectWalletButton />}
     </div>
   )
 }

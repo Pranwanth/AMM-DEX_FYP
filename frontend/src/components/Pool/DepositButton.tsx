@@ -1,17 +1,17 @@
-interface AddLiquidityButtonProps {
+interface DepositButtonProps {
   className?: string;
 }
 
-const AddLiquidityButton = (props: AddLiquidityButtonProps) => {
+const DepositButton = (props: DepositButtonProps) => {
   const { className } = props;
   return (
     <button
       className={`w-full text-center font-bold bg-sky-900 text-white p-4 rounded ${className ?? ""
         }`}
     >
-      Add Liquidity
+      Deposit
     </button>
   );
 };
 
-export default AddLiquidityButton;
+export default DepositButton;
