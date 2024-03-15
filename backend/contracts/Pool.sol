@@ -49,7 +49,7 @@ contract Pool is IPool, ERC20 {
     token1 = _token1;
   }
 
-  function updateReserves(uint balance0, uint balance1, uint112 _reserve0, uint112 _reserve1) private {
+  function updateReserves(uint balance0, uint balance1) private {
     reserve0 = uint112(balance0);
     reserve1 = uint112(balance1);
     emit Sync(reserve0, reserve1);
@@ -73,7 +73,7 @@ contract Pool is IPool, ERC20 {
     require(liquidity > 0, 'Pool: INSUFFICIENT_LIQUIDITY_MINTED');
     _mint(to, liquidity);
 
-    updateReserves(balance0, balance1, _reserve0, _reserve1);
+    updateReserves(balance0, balance1);
     
     emit Mint(msg.sender, amount0, amount1);
   }
@@ -96,7 +96,7 @@ contract Pool is IPool, ERC20 {
     balance0 = IERC20(_token0).balanceOf(address(this));
     balance1 = IERC20(_token1).balanceOf(address(this));
 
-    updateReserves(balance0, balance1, _reserve0, _reserve1);
+    updateReserves(balance0, balance1);
 
     emit Burn(msg.sender, amount0, amount1, to);
   }
@@ -125,7 +125,7 @@ contract Pool is IPool, ERC20 {
   uint balance1Adjusted = balance1 * 1000 - amount1In * 3;
   require(balance0Adjusted * balance1Adjusted >= _reserve0 * _reserve1 * (1000**2), 'Pool: K');
 
-  updateReserves(balance0, balance1, _reserve0, _reserve1);
+  updateReserves(balance0, balance1);
   emit Swap(msg.sender, amount0In, amount1In, amount0Out, amount1Out, to);
   }
 
@@ -137,6 +137,6 @@ contract Pool is IPool, ERC20 {
   }
 
   function sync() external lock {
-    updateReserves(IERC20(token0).balanceOf(address(this)), IERC20(token1).balanceOf(address(this)), reserve0, reserve1);
+    updateReserves(IERC20(token0).balanceOf(address(this)), IERC20(token1).balanceOf(address(this)));
   }
 }
