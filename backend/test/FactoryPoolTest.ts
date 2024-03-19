@@ -1,8 +1,8 @@
 import { loadFixture, } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { LiquidityPool__factory } from "../typechain-types";
-import Pool from "../artifacts/contracts/Pool.sol/Pool.json"
+
+import Pool from "../artifacts/contracts/Pool.sol/Pool.json";
 
 const TEST_ADDRESSES: [string, string] = [
   '0x1000000000000000000000000000000000000000',

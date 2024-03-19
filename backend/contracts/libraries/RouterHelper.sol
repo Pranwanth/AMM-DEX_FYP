@@ -18,7 +18,7 @@ library RouterHelper {
             hex'ff',
             factory,
             keccak256(abi.encodePacked(token0, token1)),
-            hex'96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f' // init code hash
+            hex'92ecde9b03e3fa7b162d042bda31d023ddfa5b56a5766196dfc9e5f15cdb8611' // init code hash
         )))));
     }
 
@@ -51,7 +51,7 @@ library RouterHelper {
         require(amountOut > 0, 'RouterHelper: INSUFFICIENT_OUTPUT_AMOUNT');
         require(reserveIn > 0 && reserveOut > 0, 'RouterHelper: INSUFFICIENT_LIQUIDITY');
         uint numerator = reserveIn * amountOut * 1000;
-        uint denominator = reserveOut - amountOut * 997;
+        uint denominator = (reserveOut - amountOut) * 997;
         amountIn = (numerator / denominator) + 1;
     }
 

@@ -100,7 +100,7 @@ contract Router is IRouter {
     address pool = RouterHelper.poolFor(factory, token, WETH);
     _safeTransferFrom(token, msg.sender, pool, amountToken);
     IWETH(WETH).deposit{value: amountETH}();
-    assert(IWETH(WETH).transfer(pool, amountETH));
+    require(IWETH(WETH).transfer(pool, amountETH), 'Router: FAILED TO TRANSFER');
     liquidityTokens = IPool(pool).mint(to);
 
     // refund dust eth, if any
