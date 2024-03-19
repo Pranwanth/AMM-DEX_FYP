@@ -260,4 +260,49 @@ contract Router is IRouter {
     // refund dust eth, if any
     if (msg.value > amounts[0]) RouterHelper.safeTransferETH(msg.sender, msg.value - amounts[0]);
   }
+
+  // **** LIBRARY FUNCTIONS MAINLY USED FOR TESTING ****
+  function quote(uint amountA, uint reserveA, uint reserveB) public pure virtual override returns (uint amountB) {
+    return RouterHelper.getQuote(amountA, reserveA, reserveB);
+  }
+
+  function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut)
+    public
+    pure
+    virtual
+    override
+    returns (uint amountOut)
+  {
+    return RouterHelper.getAmountOut(amountIn, reserveIn, reserveOut);
+  }
+
+  function getAmountIn(uint amountOut, uint reserveIn, uint reserveOut)
+    public
+    pure
+    virtual
+    override
+    returns (uint amountIn)
+  {
+    return RouterHelper.getAmountIn(amountOut, reserveIn, reserveOut);
+  }
+
+  function getAmountsOut(uint amountIn, address[] memory path)
+    public
+    view
+    virtual
+    override
+    returns (uint[] memory amounts)
+  {
+    return RouterHelper.getAmountsOut(factory, amountIn, path);
+  }
+
+  function getAmountsIn(uint amountOut, address[] memory path)
+    public
+    view
+    virtual
+    override
+    returns (uint[] memory amounts)
+  {
+    return RouterHelper.getAmountsIn(factory, amountOut, path);
+  }
 }
