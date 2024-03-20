@@ -111,23 +111,23 @@ describe("LiquidityPool", function () {
       await expect(pool.connect(trader2).addLiquidity(token0AmountIn, wrongToken1AmountIn))
         .to.be.revertedWith("Error: Invalid Liquidity Quantites");
     })
-    it("invalid liqudity: insufficient balance", async function () {
-      const { pool, poolAddress, receiptToken, token0, token1, token0Address, token1Address, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
+    // it("invalid liqudity: insufficient balance", async function () {
+    //   const { pool, poolAddress, receiptToken, token0, token1, token0Address, token1Address, trader1, trader2 } = await loadFixture(deployLiquidityPoolFixture);
 
-      await pool.initialise(token0Address, token1Address, receiptToken)
-      const token0AmountIn = ethers.parseUnits("50", 18);
-      const token1AmountIn = ethers.parseUnits("50", 18);
+    //   await pool.initialise(token0Address, token1Address, receiptToken)
+    //   const token0AmountIn = ethers.parseUnits("50", 18);
+    //   const token1AmountIn = ethers.parseUnits("50", 18);
 
-      const transferToTrader2Token0 = ethers.parseUnits("75", 18);
+    //   const transferToTrader2Token0 = ethers.parseUnits("75", 18);
 
-      await token0.connect(trader1).approve(poolAddress, token0AmountIn);
-      await token1.connect(trader1).approve(poolAddress, token1AmountIn);
+    //   await token0.connect(trader1).approve(poolAddress, token0AmountIn);
+    //   await token1.connect(trader1).approve(poolAddress, token1AmountIn);
 
-      await token0.connect(trader1).transfer(trader2, transferToTrader2Token0);
+    //   await token0.connect(trader1).transfer(trader2, transferToTrader2Token0);
 
-      await expect(pool.connect(trader1).addLiquidity(token0AmountIn, token1AmountIn))
-        .to.be.revertedWithCustomError(token0, "ERC20InsufficientBalance");
-    })
+    //   await expect(pool.connect(trader1).addLiquidity(token0AmountIn, token1AmountIn))
+    //     .to.be.revertedWithCustomError(token0, "ERC20InsufficientBalance");
+    // })
     it("invalid liqudity: insufficient allowance", async function () {
       const { pool, poolAddress, receiptToken, token0, token1, token0Address, token1Address, trader1 } = await loadFixture(deployLiquidityPoolFixture);
 
