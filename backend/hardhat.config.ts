@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-ignition-ethers";
+import "hardhat-abi-exporter";
 
 require("dotenv").config();
 
@@ -23,6 +24,14 @@ const config: HardhatUserConfig = {
       chainId: 1337,
     }
   },
+  abiExporter: {
+    path: "../frontend/src/abi",
+    runOnCompile: true,
+    clear: true,
+    flat: true,
+    spacing: 2,
+    format: "minimal",
+  }
 };
 
 export default config;
