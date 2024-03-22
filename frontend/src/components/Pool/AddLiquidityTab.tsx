@@ -1,40 +1,62 @@
 import { useState } from 'react'
-import ChooseTokenButton from '../SwapInput/ChooseTokenButton'
-import PlusIcon from '../../assets/PlusIcon'
+import Card from '../Card'
+import TokenSelector from '../Dialog/TokenSelector'
+import { Token } from '../GlobalTypes'
+import InputField from '../Input/InputField'
 
 const AddLiquidityTab = () => {
 
-  const [tokenOneValue, setTokenOneValue] = useState('')
-  const [tokenTwoValue, setTokenTwoValue] = useState('')
+  const [tokenZero, setTokenZero] = useState<Token | undefined>(undefined)
+  const [tokenOne, setTokenTwo] = useState<Token | undefined>(undefined)
 
-  const onInputChange = (key: "tokenOne" | "tokenTwo", value: string) => {
+  const [tokenZeroValue, setTokenZeroValue] = useState('')
+  const [tokenOneValue, setTokenOneValue] = useState('')
+
+  const onInputChange = (key: "tokenZero" | "tokenOne", value: string) => {
     const numValue = Number(value);
 
     if (isNaN(numValue)) {
-      console.error(`AddLiquidityTokenOneInput - ${value} cannot be converted to Number`);
+      console.error(`AddLiquidityTokenInput - ${value} cannot be converted to Number`);
       return;
     }
 
-    if (key === "tokenOne") {
-      setTokenOneValue(value)
+    if (key === "tokenZero") {
+      setTokenZeroValue(value)
     }
     else {
-      setTokenTwoValue(value)
+      setTokenOneValue(value)
     }
   }
 
+  const selectTokenZero = (token: Token) => {
+    setTokenZero(token)
+  }
+
+  const selectTokenTwo = (token: Token) => {
+    setTokenTwo(token)
+  }
+
   return (
-    <div className="relative">
-      <div className="flex text-xl h-32 p-4 bg-sky-50 rounded-md my-2 text-sky-950">
-        <input type="number" value={tokenOneValue} min="0" onChange={event => onInputChange("tokenOne", event.target.value)} className="flex w-full bg-transparent rounded-md text-2xl focus-visible:outline-none" />
-        <ChooseTokenButton type="addLiquidityTokenOne" />
-      </div>
-      <PlusIcon />
-      <div className="flex text-xl h-32 p-4 bg-sky-50 rounded-md my-2 text-sky-950">
-        <input type="number" value={tokenTwoValue} min="0" onChange={event => onInputChange("tokenTwo", event.target.value)} className="block w-full bg-transparent rounded-md text-2xl focus-visible:outline-none" />
-        <ChooseTokenButton type="addLiquidityTokenTwo" />
-      </div>
-    </div>
+    <Card className="relative">
+      <InputField
+        type="number"
+        min="0"
+        value={tokenZeroValue}
+        onChange={event => onInputChange("tokenZero", event.target.value)}
+      >
+        <TokenSelector token={tokenZero} tokenSelectHandler={selectTokenZero} />
+      </InputField>
+      <InputField
+        type="number"
+        min="0"
+        value={tokenOneValue}
+        onChange={event => onInputChange("tokenOne", event.target.value)}
+      >
+        <TokenSelector token={tokenOne} tokenSelectHandler={selectTokenTwo} />
+      </InputField>
+      <button className='connect-wallet-btn mt-2'>Approve Tokens</button>
+      <button className='connect-wallet-btn mt-5'>Supply</button>
+    </Card>
 
   )
 }

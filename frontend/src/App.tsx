@@ -9,6 +9,7 @@ import Pool from "./pages/Pool";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { config } from "./config";
+import AddLiquidityTab from "./components/Pool/AddLiquidityTab";
 
 const App = () => {
   const { isModalOpen } = useTokenStore();
@@ -17,7 +18,7 @@ const App = () => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <main className="flex flex-col w-screen h-screen  text-white relative">
+        <main className="flex flex-col w-screen h-screen bg-primaryBackground font-body relative">
           {isModalOpen && (
             <div className="w-screen h-screen bg-black/20 absolute z-10" />
           )}
@@ -25,6 +26,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Swap />} />
             <Route path="/pool" element={<Pool />} />
+            <Route path="/add" element={<AddLiquidityTab />} />
           </Routes>
           {isModalOpen && <SelectTokenModal />}
         </main>

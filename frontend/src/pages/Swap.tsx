@@ -37,7 +37,7 @@ const Swap = () => {
   };
 
   return (
-    <section className="mt-12 mx-auto w-128  relative">
+    <section className="mt-12 mx-auto w-128 relative">
       <h3 className="text-sky-800 font-bold">Swap</h3>
       <div>
         <SwapInput

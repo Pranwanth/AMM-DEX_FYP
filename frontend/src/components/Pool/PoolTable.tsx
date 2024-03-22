@@ -11,8 +11,8 @@ const PoolTable: React.FC<PoolTableProps> = (props: PoolTableProps) => {
 
   return (
     <div className="overflow-x-auto relative mt-10">
-      <table className="w-full text-sm text-left text-secondary">
-        <thead className="text-xs text-secondary uppercase">
+      <table className="w-full text-sm text-left">
+        <thead className="text-xs uppercase text-secondaryText">
           <tr>
             <th scope="col" className="py-3 px-6">
               Name
@@ -25,7 +25,7 @@ const PoolTable: React.FC<PoolTableProps> = (props: PoolTableProps) => {
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-primaryText">
           {tableRows.map((row) => (
             <tr className="border-b hover:bg-gray-100" key={`pool_table_row-${row.token0 < row.token1 ? row.token0.concat(row.token1) : row.token1.concat(row.token0)}`}>
               <td className="py-4 px-6">

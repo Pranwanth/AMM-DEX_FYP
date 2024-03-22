@@ -1,3 +1,4 @@
+import Card from "../components/Card";
 import { PoolTableRow } from "../components/GlobalTypes";
 import PoolTabLayout from "../components/Pool/PoolTabLayout";
 import PoolTable from "../components/Pool/PoolTable";
@@ -12,13 +13,13 @@ const Pool = () => {
   }
 
   return (
-    <section className="mt-12 mx-auto w-3/4 h-screen">
-      <h3 className="text-2xl text-secondary font-bold">Pools</h3>
+    <Card>
+      <h2 className="text-2xl text-primaryText font-heading font-bold">Pools</h2>
       <PoolTable
         tableRows={[dummyTableRow]}
       />
       {/* <PoolTabLayout /> */}
-    </section>
+    </Card>
   );
 };
 
