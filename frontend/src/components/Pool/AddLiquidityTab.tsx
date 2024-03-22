@@ -3,12 +3,13 @@ import Card from '../Card'
 import TokenSelector from '../Dialog/TokenSelector'
 import { Token } from '../GlobalTypes'
 import InputField from '../Input/InputField'
-import { useERC20Approve } from '../../hooks/useERC20Approve'
+import { ROUTER_ADDR } from '../utils/ContractAdresses'
+import { approveMultipleERC20 } from '../utils/Helper'
 
 const AddLiquidityTab = () => {
 
   const [tokenZero, setTokenZero] = useState<Token | undefined>(undefined)
-  const [tokenOne, setTokenTwo] = useState<Token | undefined>(undefined)
+  const [tokenOne, setTokenOne] = useState<Token | undefined>(undefined)
 
   const [tokenZeroValue, setTokenZeroValue] = useState('')
   const [tokenOneValue, setTokenOneValue] = useState('')
@@ -33,22 +34,26 @@ const AddLiquidityTab = () => {
     setTokenZero(token)
   }
 
-  const selectTokenTwo = (token: Token) => {
-    setTokenTwo(token)
+  const selectTokenOne = (token: Token) => {
+    setTokenOne(token)
   }
 
-  const { approve, error } = useERC20Approve({
-    contractAddress: "0x5D1d5FD179b00E2bc9E32ECBcF8100a175B71f1d",
-    spenderAddress: "0x71949b1ac51355c7b917f629f2f6BD0a78D8DE4a",
-    amount: "10",
-  })
-
   const handleApprove = async () => {
-    try {
-      const transactionReceipt = await approve();
-      console.log("Transaction Receipt:", transactionReceipt);
-    } catch (err) {
-      console.error("Transaction Failed:", error);
+    if (tokenZero && tokenOne && tokenZeroValue !== '' && tokenOneValue !== '') {
+      try {
+        const approvalRequests = [
+          { contractAddress: tokenZero.address, spenderAddress: ROUTER_ADDR, amount: tokenZeroValue },
+          { contractAddress: tokenOne.address, spenderAddress: ROUTER_ADDR, amount: tokenOneValue },
+        ]
+
+        const transactions = await approveMultipleERC20(approvalRequests)
+        console.log('Transactions:', transactions);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }
+    else {
+      console.error("AddLiquidityTab-handleApprove-InvalidInputs")
     }
   }
 
@@ -68,7 +73,7 @@ const AddLiquidityTab = () => {
         value={tokenOneValue}
         onChange={event => onInputChange("tokenOne", event.target.value)}
       >
-        <TokenSelector token={tokenOne} tokenSelectHandler={selectTokenTwo} />
+        <TokenSelector token={tokenOne} tokenSelectHandler={selectTokenOne} />
       </InputField>
       <button className='connect-wallet-btn mt-2' onClick={handleApprove}>Approve Tokens</button>
       <button className='connect-wallet-btn mt-5'>Supply</button>
