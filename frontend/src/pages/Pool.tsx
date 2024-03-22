@@ -1,6 +1,5 @@
 import Card from "../components/Card";
 import { PoolTableRow } from "../components/GlobalTypes";
-import PoolTabLayout from "../components/Pool/PoolTabLayout";
 import PoolTable from "../components/Pool/PoolTable";
 
 const Pool = () => {
