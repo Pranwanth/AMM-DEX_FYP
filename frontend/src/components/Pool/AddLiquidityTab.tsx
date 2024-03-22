@@ -3,6 +3,7 @@ import Card from '../Card'
 import TokenSelector from '../Dialog/TokenSelector'
 import { Token } from '../GlobalTypes'
 import InputField from '../Input/InputField'
+import { useERC20Approve } from '../../hooks/useERC20Approve'
 
 const AddLiquidityTab = () => {
 
@@ -36,6 +37,21 @@ const AddLiquidityTab = () => {
     setTokenTwo(token)
   }
 
+  const { approve, error } = useERC20Approve({
+    contractAddress: "0x5D1d5FD179b00E2bc9E32ECBcF8100a175B71f1d",
+    spenderAddress: "0x71949b1ac51355c7b917f629f2f6BD0a78D8DE4a",
+    amount: "10",
+  })
+
+  const handleApprove = async () => {
+    try {
+      const transactionReceipt = await approve();
+      console.log("Transaction Receipt:", transactionReceipt);
+    } catch (err) {
+      console.error("Transaction Failed:", error);
+    }
+  }
+
   return (
     <Card className="relative">
       <InputField
@@ -54,7 +70,7 @@ const AddLiquidityTab = () => {
       >
         <TokenSelector token={tokenOne} tokenSelectHandler={selectTokenTwo} />
       </InputField>
-      <button className='connect-wallet-btn mt-2'>Approve Tokens</button>
+      <button className='connect-wallet-btn mt-2' onClick={handleApprove}>Approve Tokens</button>
       <button className='connect-wallet-btn mt-5'>Supply</button>
     </Card>
 
