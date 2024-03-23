@@ -32,7 +32,7 @@ const TokenSelector = (props: TokenSelectorProps) => {
   return (
     <div className="flex items-center">
       <button
-        className="bg-white text-sky-950 hover:bg-sky-600/20 font-bold py-1 px-2 rounded-3xl text-base whitespace-nowrap"
+        className="bg-white text-primaryText hover:bg-sky-600/20 font-bold py-1 px-2 rounded-3xl text-base whitespace-nowrap"
         onClick={handleOpenDialog}>
         <div className="flex justify-center items-center gap-2">
           {token ? token.ticker : "Select Token"}
