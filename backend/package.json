@@ -2,8 +2,10 @@
   "scripts": {
     "compile": "yarn hardhat compile",
     "test": "yarn hardhat test",
-    "start": "yarn compile && yarn test && yarn hardhat node",
-    "deploy": "yes | yarn hardhat ignition deploy ignition/modules/local_01.ts --network localhost"
+    "reset:journal": "echo '' > ignition/deployments/chain-1337/journal.jsonl",
+    "start": "yarn compile && yarn test && yarn reset:journal && yarn hardhat node",
+    "gensis": "yarn hardhat run scripts/gensis.ts --network localhost",
+    "deploy": "yes | yarn hardhat ignition deploy ignition/modules/local_01.ts --network localhost && yarn gensis"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
