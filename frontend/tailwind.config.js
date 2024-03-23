@@ -22,6 +22,7 @@ export default {
         secondaryText: '#555555',
         interactiveElements: '#0F609B',
         highlight: '#BEE3F8',
+        disabled: '#A1A1A1',
       },
       fontFamily: {
         heading: ['Montserrat', 'sans-serif'],

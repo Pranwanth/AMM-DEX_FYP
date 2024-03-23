@@ -1,2 +1,13 @@
-export { default as approveERC20 } from './approveERC20'
-export { default as approveMultipleERC20 } from './approveMultipleERC20'
+export { approveMultipleERC20 } from './ERC20';
+export {
+  addLiquidity,
+  addLiquidityETH,
+  removeLiquidity,
+  removeLiquidityETH,
+  swapTokensForExactTokens,
+  swapETHForExactTokens,
+  swapExactETHForTokens,
+  swapExactTokensForETH,
+  swapExactTokensForTokens,
+  swapTokensForExactETH,
+} from './Router'; 
