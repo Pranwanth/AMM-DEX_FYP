@@ -17,11 +17,11 @@ export default {
       },
       colors: {
         primaryBackground: '#F7F7F7',
-        secondaryBackground: '#E1E1E1',
+        secondaryBackground: '#DFDFDF',
         primaryText: '#333333',
         secondaryText: '#555555',
-        interactiveElements: '#0F609B',
-        highlight: '#BEE3F8',
+        interactiveElements: '#202020',
+        highlight: '#007BFF',
         disabled: '#A1A1A1',
       },
       fontFamily: {

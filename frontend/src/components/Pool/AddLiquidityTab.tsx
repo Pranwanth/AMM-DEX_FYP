@@ -1,15 +1,16 @@
 import { useState } from 'react'
+import { useAccount } from 'wagmi'
+
 import Card from '../Card'
+import ConnectWalletButton from '../ConnectWalletButton'
 import TokenSelector from '../Dialog/TokenSelector'
 import { Token } from '../GlobalTypes'
 import InputField from '../Input/InputField'
+import { Popover } from '../Popover'
+import SettingsButton from '../SettingsButton'
+import SettingsPopoverContent from '../SettingsPopoverContent'
 import { ROUTER_ADDR } from '../utils/ContractAdresses'
 import { addLiquidity, approveMultipleERC20 } from '../utils/helper'
-import ConnectWalletButton from '../ConnectWalletButton'
-import { useAccount } from 'wagmi'
-import SettingsButton from '../SettingsButton'
-import { Popover } from '../Popover'
-import SettingsPopoverContent from '../SettingsPopoverContent'
 
 const AddLiquidityTab = () => {
 
