@@ -65,6 +65,24 @@
     min-width: 586px;
     min-height: 498px;
   }
+
+  .btn {
+    width: 100%;
+    text-align: center;
+    font-weight: 700;
+    padding: 1rem; /* Adjust padding as needed */
+    border-radius: 0.25rem; /* Adjust border radius as needed */
+  }
+  
+  .btn-primary {
+    background-color: #202020;
+    color: #ffffff; /* Adjust text color as needed */
+  }
+  
+  .btn-disabled {
+    opacity: 0.5; /* Adjust opacity for disabled state as needed */
+    cursor: not-allowed;
+  }
 }
 
 @layer utilities {

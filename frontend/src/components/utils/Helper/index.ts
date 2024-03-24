@@ -17,4 +17,7 @@ export {
   getPoolReservesFromTokens,
   getExistingPools,
   getPoolTokensFromAddress,
+  getTotalPoolLiquidityToken,
+  getUserLiquidityTokens,
+  calculateUserPoolData
 } from './Pool'

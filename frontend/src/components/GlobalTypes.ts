@@ -1,16 +1,18 @@
-import { Address } from "viem"
-
-export interface PoolTableRow {
-  name: string
-  liquidity: BigInt
-  token0: string
-  token1: string,
-  liquidityTokenAddress: string
+export interface PoolData {
+  address: string;
+  name: string;
+  totalPoolToken: bigint;
+  pooledTokenA: Token;
+  pooledTokenAQuantity: bigint;
+  pooledTokenB: Token;
+  pooledTokenBQuantity: bigint;
+  poolShare: bigint;
+  userLiquidityTokens: bigint;
 }
 
 export interface Token {
   name: string
   ticker: string
-  address: Address
+  address: string
   imageUrl: string
 }

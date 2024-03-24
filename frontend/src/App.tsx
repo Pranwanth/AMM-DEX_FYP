@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
 import { config } from "./config";
 import AddLiquidityTab from "./components/Pool/AddLiquidityTab";
+import RemoveLiquidityTab from "./components/Pool/RemoveLiquidityTab";
 
 const App = () => {
   const { isModalOpen } = useTokenStore();
@@ -27,6 +28,7 @@ const App = () => {
             <Route path="/" element={<Swap />} />
             <Route path="/pool" element={<Pool />} />
             <Route path="/add" element={<AddLiquidityTab />} />
+            <Route path="/remove" element={<RemoveLiquidityTab />} />
           </Routes>
           {isModalOpen && <SelectTokenModal />}
         </main>

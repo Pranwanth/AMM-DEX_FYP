@@ -3,7 +3,7 @@ import { useState } from 'react'
 import ArrowDown from '../../assets/ArrowDown'
 import CloseIcon from '../../assets/CloseIcon'
 import { Token } from '../GlobalTypes'
-import COMMON_TOKENS from '../SelectTokenModal/Tokens'
+import COMMON_TOKENS from '../Tokens'
 
 interface TokenSelectorProps {
   token?: Token
