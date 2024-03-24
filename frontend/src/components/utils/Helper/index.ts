@@ -14,5 +14,7 @@ export {
 export {
   getPoolAddress,
   getPoolReserves,
-  getPoolReservesFromTokens
+  getPoolReservesFromTokens,
+  getExistingPools,
+  getPoolTokensFromAddress,
 } from './Pool'

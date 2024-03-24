@@ -4,7 +4,8 @@ export interface PoolTableRow {
   name: string
   liquidity: BigInt
   token0: string
-  token1: string
+  token1: string,
+  liquidityTokenAddress: string
 }
 
 export interface Token {
