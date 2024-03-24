@@ -4,26 +4,26 @@ import { useLocation } from "react-router";
 import Card from "../Card";
 import { PoolData } from "../GlobalTypes";
 import Slider from "../Slider/Slider";
+import SettingsButton from "../SettingsButton";
 
 const RemoveLiquidityTab = () => {
   const [percentage, setPercentage] = useState<number>(0);
   const [approved, setApproved] = useState<boolean>(false);
 
-  const location = useLocation()
+  const location = useLocation();
 
-  const poolData = location.state[0] as PoolData
+  const poolData = location.state[0] as PoolData;
 
   // Placeholder data
-  const tokenATicker = poolData.pooledTokenA.ticker
-  const tokenBTicker = poolData.pooledTokenB.ticker
+  const tokenATicker = poolData.pooledTokenA.ticker;
+  const tokenBTicker = poolData.pooledTokenB.ticker;
   const poolSharePercentage = poolData.poolShare;
 
   const tokenAmounts = {
     tokenA: Number(poolData.pooledTokenAQuantity.toString(10)),
-    tokenB: Number(poolData.pooledTokenBQuantity.toString(10))
+    tokenB: Number(poolData.pooledTokenBQuantity.toString(10)),
   };
-
-
+  console.log(poolData, "hmm");
   const handleSliderChange = (value: number) => {
     setPercentage(value);
   };
@@ -38,48 +38,89 @@ const RemoveLiquidityTab = () => {
   };
 
   return (
-    <Card>
-      <h1 className="text-2xl font-heading mb-6">Remove Liquidity</h1>
+    <Card className="rounded-sm">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl  mb-6 font-bold text-sky-950">
+          Remove Liquidity
+        </h1>
+        <SettingsButton />
+      </div>
       <div className="mb-8">
-        <h2 className="text-lg font-heading mb-2">Select Percentage</h2>
+        <h2 className="text-lg mb-2 font-medium">Select Percentage</h2>
         <Slider value={percentage} handleSliderChange={handleSliderChange} />
-        <p className="text-sm font-body text-secondaryText">
+        <p className="text-sm  text-secondaryText">
           {percentage}% of liquidity will be removed
         </p>
       </div>
       <div className="mb-8">
-        <h2 className="text-lg font-heading mb-2">Tokens to Remove</h2>
+        <h2 className="text-lg mb-2 font-medium">Tokens to Remove</h2>
         <div className="flex items-center mb-4">
           <div className="flex-1">
-            <p className="text-sm font-body text-primaryText mb-1">{tokenATicker}</p>
-            <p className="text-lg font-heading">{(percentage / 100) * tokenAmounts.tokenA}</p>
+            <p className="text-sm  text-primaryText mb-1">{tokenATicker}</p>
+            <p className="text-lg ">
+              {(percentage / 100) * tokenAmounts.tokenA}
+            </p>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-body text-primaryText mb-1">{tokenBTicker}</p>
-            <p className="text-lg font-heading">{(percentage / 100) * tokenAmounts.tokenB}</p>
+            <p className="text-sm  text-primaryText mb-1">{tokenBTicker}</p>
+            <p className="text-lg ">
+              {(percentage / 100) * tokenAmounts.tokenB}
+            </p>
           </div>
         </div>
       </div>
-      <div className="mb-8">
+      <div>
+        <h2 className="text-lg mb-2 font-medium">Your Current Position</h2>
+        <p className="text-sm  text-primaryText flex justify-between">
+          <div> Pool Share Percentage:</div>
+          <div> {poolSharePercentage.toString(10)}%</div>
+        </p>
+        <p className="text-sm text-primaryText  flex justify-between">
+          <div>{`${tokenATicker}:`}</div>
+          <div className="flex items-center">
+            {` ${tokenAmounts.tokenA}    `}
+            <img
+              src={poolData.pooledTokenA.imageUrl}
+              alt={poolData.pooledTokenA.name}
+              className="ml-1 h-4 w-4"
+            />
+          </div>
+        </p>
+        <p className="text-sm text-primaryText  flex justify-between">
+          <div>{`${tokenBTicker}:`}</div>
+          <div className="flex items-center">
+            {` ${tokenAmounts.tokenB}`}
+            <img
+              src={poolData.pooledTokenB.imageUrl}
+              alt={poolData.pooledTokenB.name}
+              className="ml-1 h-4 w-4"
+            />
+          </div>
+        </p>
+      </div>
+      <div className="mt-2 mb-8 flex justify-between gap-2 items-center py-4">
         <button
           onClick={handleApprove}
           disabled={approved}
-          className={`btn ${approved ? 'btn-disabled' : 'btn-primary'}`}
+          className={`w-6/12 py-2  ${
+            approved
+              ? "border border-sky-950 rounded bg-transparent text-sky-950"
+              : "bg-sky-950 text-white rounded"
+          }`}
         >
           Approve
         </button>
-        <button onClick={handleRemove} disabled={!approved} className={`btn ${approved ? 'btn-primary' : 'btn-disabled'}`}>
+        <button
+          onClick={handleRemove}
+          disabled={!approved}
+          className={`w-6/12 py-2  ${
+            approved
+              ? "bg-sky-950 text-white rounded"
+              : " border border-sky-950  border-sky-950 rounded bg-transparent text-sky-950"
+          }`}
+        >
           Remove
         </button>
-      </div>
-      <div>
-        <h2 className="text-lg font-heading mb-2">Your Current Position</h2>
-        <p className="text-sm font-body text-primaryText">
-          Pool Share Percentage: {poolSharePercentage.toString(10)}%
-        </p>
-        <p className="text-sm font-body text-primaryText">
-          {`${tokenATicker}: ${tokenAmounts.tokenA}    |    ${tokenBTicker}: ${tokenAmounts.tokenB}`}
-        </p>
       </div>
     </Card>
   );

@@ -19,7 +19,7 @@ const App = () => {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <main className="flex flex-col w-screen h-screen bg-primaryBackground font-body relative">
+        <main className="flex flex-col w-screen min-h-screen bg-primaryBackground relative scrollbar-hide">
           {isModalOpen && (
             <div className="w-screen h-screen bg-black/20 absolute z-10" />
           )}
