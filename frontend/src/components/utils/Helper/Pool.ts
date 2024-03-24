@@ -115,19 +115,15 @@ export async function getUserLiquidityTokens(userAddress: string, poolAddress: s
 }
 
 export function calculateUserPoolData(userLiquidityTokens: bigint, totalPoolToken: bigint, pooledTokenAReserve: bigint, pooledTokenBReserve: bigint) {
-  const minimumLiquidity = ethers.toBigInt(10 ** 3);
-  // Calculate the actual total supply of liquidity tokens in the pool by adding the MINIMUM_LIQUIDITY
-  const actualTotalSupply = totalPoolToken + minimumLiquidity;
-
   // Calculate the proportional share of the user's liquidity tokens
-  const userProportionalShare = userLiquidityTokens / actualTotalSupply;
+  const userProportionalShare = userLiquidityTokens / totalPoolToken;
 
   // Calculate the user's pooled token quantity for Token A and Token B
   const pooledTokenAQuantity = pooledTokenAReserve * userProportionalShare;
   const pooledTokenBQuantity = pooledTokenBReserve * userProportionalShare;
 
   // Calculate the user's pool share
-  const poolShare = (userLiquidityTokens / actualTotalSupply) * 100n; // In percentage
+  const poolShare = userProportionalShare * 100n; // In percentage
 
   return [pooledTokenAQuantity, pooledTokenBQuantity, poolShare];
 }
