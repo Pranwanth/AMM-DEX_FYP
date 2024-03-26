@@ -12,9 +12,10 @@ import SettingsPopoverContent from "../SettingsPopoverContent";
 import { ROUTER_ADDR } from "../utils/ContractAdresses";
 import { addLiquidity, approveMultipleERC20 } from "../utils/helper";
 
+import useAddLiquidityStore from "../../store/useAddLiquidityStore";
+
 const AddLiquidityTab = () => {
-  const [tokenZero, setTokenZero] = useState<Token | undefined>(undefined);
-  const [tokenOne, setTokenOne] = useState<Token | undefined>(undefined);
+  const { addTokenA, addTokenB, setAddTokenA, setAddTokenB } = useAddLiquidityStore()
 
   const [tokenZeroValue, setTokenZeroValue] = useState("");
   const [tokenOneValue, setTokenOneValue] = useState("");
@@ -43,30 +44,30 @@ const AddLiquidityTab = () => {
     }
   };
 
-  const selectTokenZero = (token: Token) => {
-    setTokenZero(token);
+  const selectTokenA = (token: Token) => {
+    setAddTokenA(token);
   };
 
-  const selectTokenOne = (token: Token) => {
-    setTokenOne(token);
+  const selectTokenB = (token: Token) => {
+    setAddTokenB(token);
   };
 
   const handleApprove = async () => {
     if (
-      tokenZero &&
-      tokenOne &&
+      addTokenA &&
+      addTokenB &&
       tokenZeroValue !== "" &&
       tokenOneValue !== ""
     ) {
       try {
         const approvalRequests = [
           {
-            contractAddress: tokenZero.address,
+            contractAddress: addTokenA.address,
             spenderAddress: ROUTER_ADDR,
             amount: tokenZeroValue,
           },
           {
-            contractAddress: tokenOne.address,
+            contractAddress: addTokenB.address,
             spenderAddress: ROUTER_ADDR,
             amount: tokenOneValue,
           },
@@ -87,15 +88,15 @@ const AddLiquidityTab = () => {
     if (!approved) return;
 
     if (
-      tokenZero &&
-      tokenOne &&
+      addTokenA &&
+      addTokenB &&
       tokenZeroValue !== "" &&
       tokenOneValue !== ""
     ) {
       try {
         const transaction = await addLiquidity(
-          tokenZero.address,
-          tokenOne.address,
+          addTokenA.address,
+          addTokenB.address,
           tokenZeroValue,
           tokenOneValue,
           "0",
@@ -142,7 +143,7 @@ const AddLiquidityTab = () => {
         onChange={(event) => onInputChange("tokenZero", event.target.value)}
         placeholder="0"
       >
-        <TokenSelector token={tokenZero} tokenSelectHandler={selectTokenZero} />
+        <TokenSelector token={addTokenA} tokenSelectHandler={selectTokenA} />
       </InputField>
       <InputField
         type="number"
@@ -151,7 +152,7 @@ const AddLiquidityTab = () => {
         onChange={(event) => onInputChange("tokenOne", event.target.value)}
         placeholder="0"
       >
-        <TokenSelector token={tokenOne} tokenSelectHandler={selectTokenOne} />
+        <TokenSelector token={addTokenB} tokenSelectHandler={selectTokenB} />
       </InputField>
       {!isConnected && <ConnectWalletButton className="mt-5" />}
       {isConnected && (

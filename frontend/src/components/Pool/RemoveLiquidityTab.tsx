@@ -1,20 +1,18 @@
 import { useState } from "react";
-import { useLocation } from "react-router";
 
 import Card from "../Card";
-import { PoolData } from "../GlobalTypes";
-import Slider from "../Slider/Slider";
 import SettingsButton from "../SettingsButton";
+import Slider from "../Slider/Slider";
+
+import useUserPoolDataStore from "../../store/useUserPoolData";
 
 const RemoveLiquidityTab = () => {
   const [percentage, setPercentage] = useState<number>(0);
   const [approved, setApproved] = useState<boolean>(false);
+  const { poolData } = useUserPoolDataStore()
 
-  const location = useLocation();
+  if (!poolData) return null
 
-  const poolData = location.state[0] as PoolData;
-
-  // Placeholder data
   const tokenATicker = poolData.pooledTokenA.ticker;
   const tokenBTicker = poolData.pooledTokenB.ticker;
   const poolSharePercentage = poolData.poolShare;
@@ -23,7 +21,7 @@ const RemoveLiquidityTab = () => {
     tokenA: Number(poolData.pooledTokenAQuantity.toString(10)),
     tokenB: Number(poolData.pooledTokenBQuantity.toString(10)),
   };
-  console.log(poolData, "hmm");
+
   const handleSliderChange = (value: number) => {
     setPercentage(value);
   };
@@ -71,11 +69,11 @@ const RemoveLiquidityTab = () => {
       </div>
       <div>
         <h2 className="text-lg mb-2 font-medium">Your Current Position</h2>
-        <p className="text-sm  text-primaryText flex justify-between">
+        <div className="text-sm  text-primaryText flex justify-between">
           <div> Pool Share Percentage:</div>
           <div> {poolSharePercentage.toString(10)}%</div>
-        </p>
-        <p className="text-sm text-primaryText  flex justify-between">
+        </div>
+        <div className="text-sm text-primaryText  flex justify-between">
           <div>{`${tokenATicker}:`}</div>
           <div className="flex items-center">
             {` ${tokenAmounts.tokenA}    `}
@@ -85,8 +83,8 @@ const RemoveLiquidityTab = () => {
               className="ml-1 h-4 w-4"
             />
           </div>
-        </p>
-        <p className="text-sm text-primaryText  flex justify-between">
+        </div>
+        <div className="text-sm text-primaryText  flex justify-between">
           <div>{`${tokenBTicker}:`}</div>
           <div className="flex items-center">
             {` ${tokenAmounts.tokenB}`}
@@ -96,28 +94,26 @@ const RemoveLiquidityTab = () => {
               className="ml-1 h-4 w-4"
             />
           </div>
-        </p>
+        </div>
       </div>
       <div className="mt-2 mb-8 flex justify-between gap-2 items-center py-4">
         <button
           onClick={handleApprove}
           disabled={approved}
-          className={`w-6/12 py-2  ${
-            approved
-              ? "border border-sky-950 rounded bg-transparent text-sky-950"
-              : "bg-sky-950 text-white rounded"
-          }`}
+          className={`w-6/12 py-2  ${approved
+            ? "border border-sky-950 rounded bg-transparent text-sky-950"
+            : "bg-sky-950 text-white rounded"
+            }`}
         >
           Approve
         </button>
         <button
           onClick={handleRemove}
           disabled={!approved}
-          className={`w-6/12 py-2  ${
-            approved
-              ? "bg-sky-950 text-white rounded"
-              : " border border-sky-950  border-sky-950 rounded bg-transparent text-sky-950"
-          }`}
+          className={`w-6/12 py-2  ${approved
+            ? "bg-sky-950 text-white rounded"
+            : " border border-sky-950 rounded bg-transparent text-sky-950"
+            }`}
         >
           Remove
         </button>

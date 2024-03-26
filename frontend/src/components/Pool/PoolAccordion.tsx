@@ -1,27 +1,44 @@
 import { ethers } from "ethers";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { PoolData } from "../GlobalTypes";
-import { Link } from "react-router-dom";
+import { PoolData, Token } from "../GlobalTypes";
+
+import useAddLiquidityStore from "../../store/useAddLiquidityStore";
+import useUserPoolDataStore from "../../store/useUserPoolData";
+
 type Props = {
   pools: PoolData[];
 };
 
 const PoolAccordion: React.FC<Props> = ({ pools }) => {
   const [openPools, setOpenPools] = useState<string[]>([]);
+  const { setAddTokenA, setAddTokenB } = useAddLiquidityStore()
+  const { setPoolData } = useUserPoolDataStore()
+  const navigate = useNavigate()
+
   const formatBigint = (value: bigint): string => value.toString();
   const bigintZero = ethers.toBigInt(0);
 
-  const getStateForButton = (poolAddr: string) => {
-    return pools.filter((pool) => pool.address === poolAddr);
+  const handleRemoveClick = (poolData: PoolData) => {
+    setPoolData(poolData)
+    navigate("/remove")
   };
+
+  const handleAddClick = (tokenA: Token, tokenB: Token) => {
+    setAddTokenA(tokenA)
+    setAddTokenB(tokenB)
+    navigate("/add")
+  }
+
   const toggleVisibility = (poolAddr: string) => {
     if (openPools.includes(poolAddr)) {
-      setOpenPools(openPools.filter((addr) => addr !== poolAddr)); // Remove from the array if already open
+      setOpenPools(openPools.filter((addr) => addr !== poolAddr));
     } else {
-      setOpenPools([...openPools, poolAddr]); // Add to the array if not open
+      setOpenPools([...openPools, poolAddr]);
     }
   };
+
   return (
     <div className="space-y-4">
       {pools.map((pool) => (
@@ -34,18 +51,12 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
               <div className="flex gap-2">
                 <img
                   className="w-12 h-12"
-                  src={
-                    window.location.origin +
-                    `/assets/${pool.pooledTokenA.ticker}.png`
-                  }
+                  src={pool.pooledTokenA.imageUrl}
                 />
 
                 <img
                   className="w-12 h-12"
-                  src={
-                    window.location.origin +
-                    `/assets/${pool.pooledTokenB.ticker}.png`
-                  }
+                  src={pool.pooledTokenB.imageUrl}
                 />
               </div>
               <h3 className="text-primaryText text-xl font-bold items-center">
@@ -58,7 +69,6 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
               ) : null}
             </div>
             <button onClick={() => toggleVisibility(pool.address)}>
-              {/* Use an appropriate icon or text here for expand/collapse */}
               {openPools.includes(pool.address) ? "▲" : "▼"}
             </button>
           </div>
@@ -96,21 +106,20 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
                   <div> {formatBigint(pool.poolShare)}</div>
                 </div>
               </div>
-
               <div className="flex justify-between gap-2 items-center mt-4">
                 {pool.userLiquidityTokens !== bigintZero && (
                   <button
-                    id={pool.address}
                     className="w-6/12 py-2 border border-sky-950 rounded bg-transparent text-sky-950 hover:bg-sky-950 hover:text-white"
+                    onClick={() => handleRemoveClick(pool)}
                   >
-                    <Link to="/remove" state={getStateForButton(pool.address)}>
-                      Remove
-                    </Link>
+                    Remove
                   </button>
                 )}
-                {/* Make this buttons in to a common component maybe */}
-                <button className=" w-6/12  py-2 rounded bg-sky-950 text-white hover:bg-transparent hover:text-sky-950 hover:border-sky-950 hover:border">
-                  <Link to="/add">Add</Link>
+                <button
+                  className="w-6/12  py-2 rounded bg-sky-950 text-white hover:bg-transparent hover:text-sky-950 hover:border-sky-950 hover:border"
+                  onClick={() => handleAddClick(pool.pooledTokenA, pool.pooledTokenB)}
+                >
+                  Add
                 </button>
               </div>
             </div>

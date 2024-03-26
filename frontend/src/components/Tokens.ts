@@ -6,63 +6,63 @@ const ARB: Token = {
   name: "Arbitrum",
   ticker: "ARB",
   address: deployedAddress["local_01#ARB"],
-  imageUrl: "../../assets/ARB.png"
+  imageUrl: `${window.location.origin}/assets/ARB.png`
 }
 
 const BNB: Token = {
   name: "BNB",
   ticker: "BNB",
   address: deployedAddress["local_01#BNB"],
-  imageUrl: "../../assets/BNB.png"
+  imageUrl: `${window.location.origin}/assets/BNB.png`
 }
 
 const LINK: Token = {
   name: "Chainlink",
   ticker: "LINK",
   address: deployedAddress["local_01#LINK"],
-  imageUrl: "../../assets/LINK.png"
+  imageUrl: `${window.location.origin}/assets/LINK.png`
 }
 
 const MATIC: Token = {
   name: "Polygon",
   ticker: "MATIC",
   address: deployedAddress["local_01#MATIC"],
-  imageUrl: "../../assets/MATIC.png"
+  imageUrl: `${window.location.origin}/assets/MATIC.png`
 }
 
 const OKB: Token = {
   name: "OKEx",
   ticker: "OKB",
   address: deployedAddress["local_01#OKB"],
-  imageUrl: "../../assets/OKB.png"
+  imageUrl: `${window.location.origin}/assets/OKB.png`
 }
 
 const PEPE: Token = {
   name: "PepeCoin",
   ticker: "PEPE",
   address: deployedAddress["local_01#PEPE"],
-  imageUrl: "../../assets/PEPE.png"
+  imageUrl: `${window.location.origin}/assets/PEPE.png`
 }
 
 const SHIBA: Token = {
   name: "Shiba Inu",
   ticker: "SHIBA",
   address: deployedAddress["local_01#SHIBA"],
-  imageUrl: "../../assets/SHIBA.png"
+  imageUrl: `${window.location.origin}/assets/SHIBA.png`
 }
 
 const WBTC: Token = {
   name: "Wrapped BitCoin",
   ticker: "WBTC",
   address: deployedAddress["local_01#WBTC"],
-  imageUrl: "../../assets/WBTC.png"
+  imageUrl: `${window.location.origin}/assets/WBTC.png`
 }
 
 const WETH9: Token = {
   name: "Wrapped Ether",
   ticker: "WETH9",
   address: deployedAddress["local_01#WETH9"],
-  imageUrl: "../../assets/WETH9.png"
+  imageUrl: `${window.location.origin}/assets/WETH.png`
 }
 
 export const TOKEN_ADDR_TO_TOKEN_MAP = {

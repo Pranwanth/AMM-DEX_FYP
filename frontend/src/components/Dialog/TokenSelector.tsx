@@ -4,6 +4,7 @@ import ArrowDown from "../../../public/assets/ArrowDown";
 import CloseIcon from "../../../public/assets/CloseIcon";
 import { Token } from "../GlobalTypes";
 import COMMON_TOKENS from "../Tokens";
+import TokenWithSymbol from "../Token/TokenWithSymbol";
 
 interface TokenSelectorProps {
   token?: Token;
@@ -35,7 +36,7 @@ const TokenSelector = (props: TokenSelectorProps) => {
         onClick={handleOpenDialog}
       >
         <div className="flex justify-center items-center gap-2">
-          {token ? token.ticker : "Select Token"}
+          {token ? <TokenWithSymbol token={token} className="mr-7" /> : "Select Token"}
           <ArrowDown />
         </div>
       </button>

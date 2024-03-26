@@ -1,16 +1,17 @@
 import { useState } from "react";
-
-import ConnectWalletButton from "../components/ConnectWalletButton";
-import SwapTokenButton from "../components/SwapTokenButton";
-import SwapActionButton from "../components/SwapActionButton";
 import { useAccount } from "wagmi";
-import SettingsButton from "../components/SettingsButton";
-import Popover from "../components/Popover/Popover";
-import InputField from "../components/Input/InputField";
+
+import Card from "../components/Card";
+import ConnectWalletButton from "../components/ConnectWalletButton";
 import TokenSelector from "../components/Dialog/TokenSelector";
 import { Token } from "../components/GlobalTypes";
-import useSettingStore from "../store/useSettingStore";
+import InputField from "../components/Input/InputField";
+import Popover from "../components/Popover/Popover";
+import SettingsButton from "../components/SettingsButton";
 import SettingsPopoverContent from "../components/SettingsPopoverContent";
+import SwapActionButton from "../components/SwapActionButton";
+import SwapTokenButton from "../components/SwapTokenButton";
+import useSettingStore from "../store/useSettingStore";
 
 const Swap = () => {
   const { isConnected } = useAccount();
@@ -84,8 +85,8 @@ const Swap = () => {
   // };
 
   return (
-    <section className="mt-12 mx-auto w-128 relative bg-gray-50 p-8 rounded-sm">
-      <div className="flex justify-between">
+    <Card className="mt-12 mx-auto w-128 relative bg-gray-50 p-8 rounded-sm">
+      <div className="flex justify-between mb-4">
         <h3 className="text-sky-950 text-2xl font-bold">Swap</h3>
         <SettingsButton onClick={handleSettings} />
         <Popover
@@ -97,17 +98,6 @@ const Swap = () => {
         </Popover>
       </div>
       <div>
-        {/* <SwapInput
-          name="pay"
-          value={payAmount.toString(10)}
-          onChangeFunc={onInputChange}
-        /> */}
-        {/* <SwapInput
-          name="receive"
-          value={receiveAmount.toString(10)}
-          onChangeFunc={onInputChange}
-        /> */}
-
         <InputField
           type="number"
           min="0"
@@ -136,7 +126,7 @@ const Swap = () => {
         <SwapTokenButton />
       </div>
       {isConnected ? <SwapActionButton /> : <ConnectWalletButton />}
-    </section>
+    </Card>
   );
 };
 

@@ -9,12 +9,10 @@ const Card = (props: PropsWithChildren<CardProps>) => {
 
   const styles = className ? className : "";
   const hasBg = styles.includes("bg");
-  console.log(hasBg);
+
   return (
     <div
-      className={`card mt-12 mx-auto p-8 relative ${
-        !hasBg && "bg-white"
-      } ${styles}`}
+      className={`card mt-12 mx-auto p-8 relative ${!hasBg && "bg-white"} ${styles}`}
     >
       {children}
     </div>
