@@ -17,7 +17,7 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
   const { setPoolData } = useUserPoolDataStore()
   const navigate = useNavigate()
 
-  const formatBigint = (value: bigint): string => value.toString();
+  const formatBigint = (value: bigint): string => ethers.formatUnits(value, 18);
   const bigintZero = ethers.toBigInt(0);
 
   const handleRemoveClick = (poolData: PoolData) => {
@@ -76,7 +76,7 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
             <div className="bg-gray-50 p-4">
               <div className="text-secondaryText mt-2">
                 <div className="flex justify-between">
-                  <div>Your total pool tokens:</div>
+                  <div>Total Liquidity Supply:</div>
                   <div>{formatBigint(pool.totalPoolToken)}</div>
                 </div>
                 <div className="flex justify-between">
@@ -103,7 +103,7 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
                 </div>
                 <div className="flex justify-between">
                   <div>Your pool share:</div>
-                  <div> {formatBigint(pool.poolShare)}</div>
+                  <div> {pool.poolShare.toString(10)}%</div>
                 </div>
               </div>
               <div className="flex justify-between gap-2 items-center mt-4">

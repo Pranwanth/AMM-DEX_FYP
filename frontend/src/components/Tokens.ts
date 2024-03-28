@@ -77,6 +77,18 @@ export const TOKEN_ADDR_TO_TOKEN_MAP = {
   [deployedAddress["local_01#WETH9"]]: WETH9
 };
 
+export const GECKO_IDS = {
+  "ARB": "arbitrum",
+  "BNB": "binancecoin",
+  "LINK": "chainlink",
+  "MATIC": "matic-network",
+  "OKB": "okb",
+  "PEPE": "pepe",
+  "SHIBA": "shiba-inu",
+  "WBTC": "wrapped-bitcoin",
+  "WETH": "ethereum"
+}
+
 const COMMON_TOKENS = [ARB, BNB, WBTC]
 
 export default COMMON_TOKENS

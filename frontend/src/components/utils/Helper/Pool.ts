@@ -116,14 +116,11 @@ export async function getUserLiquidityTokens(userAddress: string, poolAddress: s
 
 export function calculateUserPoolData(userLiquidityTokens: bigint, totalPoolToken: bigint, pooledTokenAReserve: bigint, pooledTokenBReserve: bigint) {
   // Calculate the proportional share of the user's liquidity tokens
-  const userProportionalShare = userLiquidityTokens / totalPoolToken;
+  const poolShare = userLiquidityTokens * BigInt(100) / totalPoolToken;
 
   // Calculate the user's pooled token quantity for Token A and Token B
-  const pooledTokenAQuantity = pooledTokenAReserve * userProportionalShare;
-  const pooledTokenBQuantity = pooledTokenBReserve * userProportionalShare;
-
-  // Calculate the user's pool share
-  const poolShare = userProportionalShare * 100n; // In percentage
+  const pooledTokenAQuantity = pooledTokenAReserve * poolShare / BigInt(100);
+  const pooledTokenBQuantity = pooledTokenBReserve * poolShare / BigInt(100);
 
   return [pooledTokenAQuantity, pooledTokenBQuantity, poolShare];
 }
