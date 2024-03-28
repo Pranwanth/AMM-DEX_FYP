@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -6,6 +5,7 @@ import { PoolData, Token } from "../GlobalTypes";
 
 import useAddLiquidityStore from "../../store/useAddLiquidityStore";
 import useUserPoolDataStore from "../../store/useUserPoolData";
+import { ETHER_BIGINT_ZERO, formatEthersBigint } from "../utils/common";
 
 type Props = {
   pools: PoolData[];
@@ -16,9 +16,6 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
   const { setAddTokenA, setAddTokenB } = useAddLiquidityStore()
   const { setPoolData } = useUserPoolDataStore()
   const navigate = useNavigate()
-
-  const formatBigint = (value: bigint): string => ethers.formatUnits(value, 18);
-  const bigintZero = ethers.toBigInt(0);
 
   const handleRemoveClick = (poolData: PoolData) => {
     setPoolData(poolData)
@@ -62,7 +59,7 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
               <h3 className="text-primaryText text-xl font-bold items-center">
                 {pool.name}
               </h3>
-              {pool.poolShare > bigintZero ? (
+              {pool.poolShare > ETHER_BIGINT_ZERO ? (
                 <button className="text-highlight hover:text-primaryBackground">
                   Manage
                 </button>
@@ -77,12 +74,12 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
               <div className="text-secondaryText mt-2">
                 <div className="flex justify-between">
                   <div>Total Liquidity Supply:</div>
-                  <div>{formatBigint(pool.totalPoolToken)}</div>
+                  <div>{formatEthersBigint(pool.totalPoolToken)}</div>
                 </div>
                 <div className="flex justify-between">
                   <div>Pooled {pool.pooledTokenA.ticker}:</div>
                   <div className="flex items-center">
-                    {formatBigint(pool.pooledTokenAQuantity)}
+                    {formatEthersBigint(pool.pooledTokenAQuantity)}
                     <img
                       src={pool.pooledTokenA.imageUrl}
                       alt={pool.pooledTokenA.name}
@@ -93,7 +90,7 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
                 <div className="flex justify-between">
                   <div>Pooled {pool.pooledTokenB.ticker}:</div>
                   <div className="flex items-center">
-                    {formatBigint(pool.pooledTokenBQuantity)}
+                    {formatEthersBigint(pool.pooledTokenBQuantity)}
                     <img
                       src={pool.pooledTokenB.imageUrl}
                       alt={pool.pooledTokenB.name}
@@ -107,7 +104,7 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
                 </div>
               </div>
               <div className="flex justify-between gap-2 items-center mt-4">
-                {pool.userLiquidityTokens !== bigintZero && (
+                {pool.userLiquidityTokens !== ETHER_BIGINT_ZERO && (
                   <button
                     className="w-6/12 py-2 border border-sky-950 rounded bg-transparent text-sky-950 hover:bg-sky-950 hover:text-white"
                     onClick={() => handleRemoveClick(pool)}
