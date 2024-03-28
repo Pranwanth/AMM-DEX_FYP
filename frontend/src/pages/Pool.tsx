@@ -55,7 +55,7 @@ const Pool = () => {
     }
     fetchData();
   }, [isConnected]); // Run only once on component mount
-  console.log(poolData)
+
   return (
     <div className="mx-auto w-96 py-2 relative card">
       <PoolRewards className="mt-10" />

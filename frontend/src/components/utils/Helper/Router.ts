@@ -59,9 +59,9 @@ export async function addLiquidityETH(
 export async function removeLiquidity(
   tokenA: string,
   tokenB: string,
-  liquidity: string,
-  amountAMin: string,
-  amountBMin: string,
+  liquidity: bigint,
+  amountAMin: bigint,
+  amountBMin: bigint,
   to: string,
   deadline: number
 ) {
@@ -69,9 +69,9 @@ export async function removeLiquidity(
   const tx = await router.removeLiquidity(
     tokenA,
     tokenB,
-    ethers.parseUnits(liquidity, 18),
-    ethers.parseUnits(amountAMin, 18),
-    ethers.parseUnits(amountBMin, 18),
+    liquidity,
+    amountAMin,
+    amountBMin,
     to,
     deadline
   );

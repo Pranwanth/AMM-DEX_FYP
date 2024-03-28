@@ -13,7 +13,7 @@ import { ROUTER_ADDR } from "../utils/ContractAdresses";
 import { addLiquidity, approveMultipleERC20 } from "../utils/helper";
 
 import useAddLiquidityStore from "../../store/useAddLiquidityStore";
-import { createTokenApproveSuccessFromTx } from "../utils/toast";
+import { createTokenApproveSuccessToastFromTx } from "../utils/toast";
 
 const AddLiquidityTab = () => {
   const { addTokenA, addTokenB, setAddTokenA, setAddTokenB } = useAddLiquidityStore()
@@ -75,7 +75,7 @@ const AddLiquidityTab = () => {
         ];
 
         const transactions = await approveMultipleERC20(approvalRequests);
-        createTokenApproveSuccessFromTx(transactions)
+        createTokenApproveSuccessToastFromTx(transactions)
         setApproved(true);
       } catch (error) {
         console.error("Error:", error);

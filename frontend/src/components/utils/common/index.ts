@@ -1,4 +1,4 @@
 export {
   ETHER_BIGINT_ZERO,
-  formatEthersBigint
+  formatEthersBigInt
 } from "./Common"

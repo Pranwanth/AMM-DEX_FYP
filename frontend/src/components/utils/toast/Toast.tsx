@@ -10,7 +10,7 @@ export const createToastSuccess = (message: string) => {
   toast.success(message, toastOptions)
 }
 
-export const createTokenApproveSuccessFromTx = (transactions: ethers.ContractTransaction[]) => {
+export const createTokenApproveSuccessToastFromTx = (transactions: ethers.ContractTransaction[]) => {
   for (let tx of transactions) {
     const token = TOKEN_ADDR_TO_TOKEN_MAP[tx.to]
     if (token) {

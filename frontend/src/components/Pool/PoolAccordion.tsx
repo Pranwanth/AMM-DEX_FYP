@@ -5,7 +5,7 @@ import { PoolData, Token } from "../GlobalTypes";
 
 import useAddLiquidityStore from "../../store/useAddLiquidityStore";
 import useUserPoolDataStore from "../../store/useUserPoolData";
-import { ETHER_BIGINT_ZERO, formatEthersBigint } from "../utils/common";
+import { ETHER_BIGINT_ZERO, formatEthersBigInt } from "../utils/common";
 
 type Props = {
   pools: PoolData[];
@@ -74,12 +74,12 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
               <div className="text-secondaryText mt-2">
                 <div className="flex justify-between">
                   <div>Total Liquidity Supply:</div>
-                  <div>{formatEthersBigint(pool.totalPoolToken)}</div>
+                  <div>{formatEthersBigInt(pool.totalPoolToken)}</div>
                 </div>
                 <div className="flex justify-between">
                   <div>Pooled {pool.pooledTokenA.ticker}:</div>
                   <div className="flex items-center">
-                    {formatEthersBigint(pool.pooledTokenAQuantity)}
+                    {formatEthersBigInt(pool.pooledTokenAQuantity)}
                     <img
                       src={pool.pooledTokenA.imageUrl}
                       alt={pool.pooledTokenA.name}
@@ -90,7 +90,7 @@ const PoolAccordion: React.FC<Props> = ({ pools }) => {
                 <div className="flex justify-between">
                   <div>Pooled {pool.pooledTokenB.ticker}:</div>
                   <div className="flex items-center">
-                    {formatEthersBigint(pool.pooledTokenBQuantity)}
+                    {formatEthersBigInt(pool.pooledTokenBQuantity)}
                     <img
                       src={pool.pooledTokenB.imageUrl}
                       alt={pool.pooledTokenB.name}

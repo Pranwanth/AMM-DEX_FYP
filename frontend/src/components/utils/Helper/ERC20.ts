@@ -16,13 +16,13 @@ async function getTokenContract(contractAddress: string) {
   return new ethers.Contract(contractAddress, ERC20ABI, signer);
 }
 
-export async function approveERC20({ contractAddress, spenderAddress, amount }: ApprovalRequest): Promise<ethers.ContractTransaction> {
+export async function approveERC20({ contractAddress, spenderAddress, amount }: ApprovalRequest, amountInBigInt?: boolean): Promise<ethers.ContractTransaction> {
   if (typeof window.ethereum === 'undefined') {
     throw new Error("Ethereum provider (e.g., MetaMask) is not available.");
   }
-
+  const amountParam = amountInBigInt ? ethers.toBigInt(amount) : ethers.parseUnits(amount, 18)
   const tokenContract = await getTokenContract(contractAddress)
-  const tx = await tokenContract.approve(spenderAddress, ethers.parseUnits(amount, 18));
+  const tx = await tokenContract.approve(spenderAddress, amountParam);
   await tx.wait(); // Wait for the transaction to be mined
 
   return tx;
