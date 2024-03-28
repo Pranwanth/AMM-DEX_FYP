@@ -14,15 +14,17 @@ describe("Router", function () {
   async function deployRouterFixture() {
     // Contracts are deployed using the first signer/account by default
     const [wallet1] = await ethers.getSigners();
-
     const factory = await ethers.deployContract("FactoryPool")
-    const token0 = await ethers.deployContract("Lynx");
-    const token1 = await ethers.deployContract("Obsidian");
+    const lynx = await ethers.deployContract("Lynx");
+    const obsidian = await ethers.deployContract("Obsidian");
     const weth9 = await ethers.deployContract("WETH9")
 
+    const lynxAddress = await lynx.getAddress()
+    const obsidianAddress = await obsidian.getAddress()
+
+    const [token0, token0Address, token1, token1Address] = lynxAddress < obsidianAddress ? [lynx, lynxAddress, obsidian, obsidianAddress] : [obsidian, obsidianAddress, lynx, lynxAddress]
+
     const factoryAddress = await factory.getAddress()
-    const token0Address = await token0.getAddress()
-    const token1Address = await token1.getAddress()
     const weth9Address = await weth9.getAddress()
 
     await factory.createPool(token0Address, token1Address)
@@ -222,14 +224,14 @@ describe("Router", function () {
       .withArgs(routerAddress, wallet1.address, WETHPartnerAmount - BigInt(500))
       .to.emit(wethPair, 'Sync')
       .withArgs(
-        WETHPairToken0 === wethPairAddress ? BigInt(500) : BigInt(2000),
-        WETHPairToken0 === wethPairAddress ? BigInt(2000) : BigInt(500)
+        WETHPairToken0 === token0Address ? BigInt(500) : BigInt(2000),
+        WETHPairToken0 === token0Address ? BigInt(2000) : BigInt(500)
       )
       .to.emit(wethPair, 'Burn')
       .withArgs(
         routerAddress,
-        WETHPairToken0 === wethPairAddress ? WETHPartnerAmount - BigInt(500) : ETHAmount - BigInt(2000),
-        WETHPairToken0 === wethPairAddress ? ETHAmount - BigInt(2000) : WETHPartnerAmount - BigInt(500),
+        WETHPairToken0 === token0Address ? WETHPartnerAmount - BigInt(500) : ETHAmount - BigInt(2000),
+        WETHPairToken0 === token0Address ? ETHAmount - BigInt(2000) : WETHPartnerAmount - BigInt(500),
         routerAddress
       )
 
