@@ -22,6 +22,7 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.SEED_PHRASE
       },
       chainId: 1337,
+      initialBaseFeePerGas: 0,
     }
   },
   abiExporter: {
