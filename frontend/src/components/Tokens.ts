@@ -31,14 +31,14 @@ const MATIC: Token = {
 }
 
 const OKB: Token = {
-  name: "OKEx",
+  name: "OKB",
   ticker: "OKB",
   address: deployedAddress["local_01#OKB"],
   imageUrl: `${window.location.origin}/assets/OKB.png`
 }
 
 const PEPE: Token = {
-  name: "PepeCoin",
+  name: "Pepe",
   ticker: "PEPE",
   address: deployedAddress["local_01#PEPE"],
   imageUrl: `${window.location.origin}/assets/PEPE.png`
@@ -52,17 +52,24 @@ const SHIBA: Token = {
 }
 
 const WBTC: Token = {
-  name: "Wrapped BitCoin",
+  name: "Wrapped Bitcoin",
   ticker: "WBTC",
   address: deployedAddress["local_01#WBTC"],
   imageUrl: `${window.location.origin}/assets/WBTC.png`
 }
 
 const WETH9: Token = {
-  name: "Wrapped Ether",
+  name: "Wrapped Ethereum",
   ticker: "WETH9",
   address: deployedAddress["local_01#WETH9"],
   imageUrl: `${window.location.origin}/assets/WETH.png`
+}
+
+const ETH: Token = {
+  name: "Ethereum",
+  ticker: "ETH",
+  address: deployedAddress["local_01#WETH9"],
+  imageUrl: `${window.location.origin}/assets/ETH.png`
 }
 
 export const TOKEN_ADDR_TO_TOKEN_MAP = {
@@ -89,6 +96,16 @@ export const GECKO_IDS = {
   "WETH": "ethereum"
 }
 
-const COMMON_TOKENS = [ARB, BNB, WBTC]
+export const TOKENS = [
+  ARB,
+  BNB,
+  LINK,
+  MATIC,
+  OKB,
+  PEPE,
+  SHIBA,
+  WBTC,
+  ETH
+]
 
-export default COMMON_TOKENS
+export default TOKENS

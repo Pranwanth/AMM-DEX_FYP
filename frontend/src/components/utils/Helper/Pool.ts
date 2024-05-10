@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { FACTORY_ADDR } from "../ContractAdresses";
 import FactoryABI from "../../../abi/FactoryPool.json";
 import PoolABI from "../../../abi/Pool.json";
+import { sortTokens } from "../common";
 
 async function getProvider() {
   if (typeof window.ethereum === 'undefined') {
@@ -98,6 +99,34 @@ export async function getTotalPoolLiquidityToken(poolAddress: string): Promise<b
   } catch (error) {
     console.error("Error fetching total pool liquidity tokens:", error);
     return ethers.toBigInt(0);
+  }
+}
+
+export async function getTokenPricesInPool(token0Address: string, token1Address: string) {
+  try {
+    // Get the reserves for token0 and token1
+    const [reserve0, reserve1] = await getPoolReservesFromTokens(token0Address, token1Address);
+
+    if (reserve0 === ethers.toBigInt(0) || reserve1 === ethers.toBigInt(0)) {
+      throw new Error("Reserves cannot be zero for price calculation.");
+    }
+
+    // Calculate price of token0 in terms of token1 and vice versa
+    const token0Price = Number(reserve1) / Number(reserve0);
+    const token1Price = Number(reserve0) / Number(reserve1);
+
+    const [lowerAddr, higherAddr] = sortTokens(token0Address, token1Address)
+
+    return {
+      [lowerAddr]: token0Price,
+      [higherAddr]: token1Price
+    };
+  } catch (error) {
+    console.error("Error calculating token prices:", error);
+    return {
+      [token0Address]: 0,
+      [token1Address]: 0
+    }
   }
 }
 

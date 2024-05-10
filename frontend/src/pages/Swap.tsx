@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 import Card from "../components/Card";
@@ -11,11 +11,13 @@ import SettingsButton from "../components/SettingsButton";
 import SettingsPopoverContent from "../components/SettingsPopoverContent";
 import SwapActionButton from "../components/SwapActionButton";
 import SwapTokenButton from "../components/SwapTokenButton";
-import useSettingStore from "../store/useSettingStore";
-import { swapExactTokensForTokens } from "../components/utils/helper";
-import { approveERC20 } from "../components/utils/helper/ERC20";
 import { ROUTER_ADDR } from "../components/utils/ContractAdresses";
+import { formatToSixSignificantDigits } from "../components/utils/common";
+import { findSwapPath, getTokenPricesInPool, swapETHForExactTokens, swapExactETHForTokens, swapExactTokensForETH, swapExactTokensForTokens, swapTokensForExactETH, swapTokensForExactTokens } from "../components/utils/helper";
+import { approveERC20 } from "../components/utils/helper/ERC20";
 import { createTokenApproveSuccessToastFromTx } from "../components/utils/toast";
+import useSettingStore from "../store/useSettingStore";
+import useTokenGraphStore from "../store/useTokenGraphStore";
 
 const Swap = () => {
   const { isConnected, address: userAddress } = useAccount();
@@ -26,8 +28,11 @@ const Swap = () => {
   const [tokenZero, setTokenZero] = useState<Token | undefined>(undefined);
   const [tokenOne, setTokenOne] = useState<Token | undefined>(undefined);
   const [approved, setApproved] = useState(false)
+  const [userChosenInputField, setUserChosenInputField] = useState<number | undefined>(undefined)
+  const [swapPath, setSwapPath] = useState<string[]>([])
 
   const { swapSlippage } = useSettingStore();
+  const { tokenGraph } = useTokenGraphStore();
 
   const handleSettings = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElement(event.currentTarget);
@@ -47,47 +52,43 @@ const Swap = () => {
     setTokenOne(token);
   };
 
-  const onInputChange = (key: "tokenZero" | "tokenOne", value: string) => {
+  function calculateOutputTokens(inputQuantity: number, priceOfTokenAInTokenB: number): number {
+    if (inputQuantity < 0 || priceOfTokenAInTokenB < 0) {
+      return 0
+    }
+    const outputQuantityOfTokenB = inputQuantity * priceOfTokenAInTokenB;
+    return outputQuantityOfTokenB;
+  }
+
+  const onInputChange = async (key: "tokenZero" | "tokenOne", value: string) => {
     const numValue = Number(value);
 
     if (isNaN(numValue)) {
       console.error(
-        `AddLiquidityTokenInput - ${value} cannot be converted to Number`
+        `SwapTokenInput - ${value} cannot be converted to Number`
       );
       return;
     }
 
     if (key === "tokenZero") {
       setTokenZeroValue(value);
+      setUserChosenInputField(0)
+      if (tokenZero && tokenOne) {
+        const tokenPriceObj = await getTokenPricesInPool(tokenZero.address, tokenOne.address)
+        const tokenOneQuantity = calculateOutputTokens(numValue, tokenPriceObj[tokenZero.address])
+        setTokenOneValue(formatToSixSignificantDigits(tokenOneQuantity).toString(10))
+      }
     } else {
       setTokenOneValue(value);
+      setUserChosenInputField(1)
+      if (tokenZero && tokenOne) {
+        const tokenPriceObj = await getTokenPricesInPool(tokenZero.address, tokenOne.address)
+        const tokenZeroQuantity = calculateOutputTokens(numValue, tokenPriceObj[tokenOne.address])
+        setTokenOneValue(formatToSixSignificantDigits(tokenZeroQuantity).toString(10))
+      }
     }
   };
 
-  // const onInputChange = (key: "pay" | "receive", value: string) => {
-  //   const numValue = Number(value);
-
-  //   if (isNaN(numValue)) {
-  //     console.error(`${value} cannot be converted to Number`);
-  //     return;
-  //   }
-
-  //   switch (key) {
-  //     case "pay": {
-  //       setPayAmount(numValue);
-  //       // do something to receive
-  //       break;
-  //     }
-  //     case "receive": {
-  //       setReceiveAmount(numValue);
-  //       // do something to pay
-  //       break;
-  //     }
-  //     default: {
-  //       break;
-  //     }
-  //   }
-  // };
   const handleApprove = async () => {
     if (tokenZero && tokenZeroValue !== "") {
       const tx = await approveERC20({
@@ -104,19 +105,91 @@ const Swap = () => {
   }
 
   const handleSwap = async () => {
-    if (tokenZero && tokenOne && tokenZeroValue !== "" && tokenOneValue !== "" && approved) {
-      await swapExactTokensForTokens(
-        tokenZeroValue,
-        "0",
-        [tokenZero.address, tokenOne.address],
-        userAddress as string,
-        Number.MAX_SAFE_INTEGER
-      )
+    if (tokenZero && tokenOne && approved) {
+      const isInputETH = tokenZero.ticker === "ETH";
+      const isOutputETH = tokenOne.ticker === "ETH";
+
+      try {
+        if (isInputETH) {
+          // Swapping ETH for tokens
+          if (userChosenInputField === 0) {
+            await swapExactETHForTokens(
+              "0",
+              [tokenZero.address, tokenOne.address],
+              userAddress as string,
+              Number.MAX_SAFE_INTEGER,
+              tokenZeroValue
+            );
+          } else {
+            await swapETHForExactTokens(
+              tokenOneValue,
+              [tokenZero.address, tokenOne.address],
+              userAddress as string,
+              Number.MAX_SAFE_INTEGER,
+              tokenZeroValue
+            );
+          }
+        } else if (isOutputETH) {
+          // Swapping tokens for ETH
+          if (userChosenInputField === 0) {
+            await swapExactTokensForETH(
+              tokenZeroValue,
+              "0",
+              [tokenZero.address, tokenOne.address],
+              userAddress as string,
+              Number.MAX_SAFE_INTEGER
+            );
+          } else {
+            await swapTokensForExactETH(
+              tokenOneValue,
+              tokenZeroValue,
+              [tokenZero.address, tokenOne.address],
+              userAddress as string,
+              Number.MAX_SAFE_INTEGER
+            );
+          }
+        } else {
+          // Standard token to token swap
+          if (userChosenInputField === 0) {
+            // Exact tokens for tokens
+            await swapExactTokensForTokens(
+              tokenZeroValue,
+              "0",
+              [tokenZero.address, tokenOne.address],
+              userAddress as string,
+              Number.MAX_SAFE_INTEGER
+            );
+          } else {
+            // Tokens for exact tokens
+            await swapTokensForExactTokens(
+              tokenOneValue,
+              tokenZeroValue,
+              [tokenZero.address, tokenOne.address],
+              userAddress as string,
+              Number.MAX_SAFE_INTEGER
+            );
+          }
+        }
+      } catch (error) {
+        console.error("An error occurred during the swap:", error);
+      }
+    } else {
+      console.error("Swap conditions not met: Missing input values, tokens, or approval.");
     }
-    else {
-      return
+  };
+
+  useEffect(() => {
+    const getSwapPath = async () => {
+      if (tokenZero && tokenOne && tokenGraph) {
+        const path = await findSwapPath(tokenGraph, tokenZero.address, tokenOne.address)
+        if (path.length > 0) {
+          setSwapPath(path)
+        }
+      }
     }
-  }
+    getSwapPath()
+  }, [tokenZero, tokenOne])
+
 
   return (
     <Card className="mt-12 mx-auto w-128 relative bg-gray-50 p-8 rounded-sm">

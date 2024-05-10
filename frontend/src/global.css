@@ -9,16 +9,6 @@
     -webkit-appearance: none;
     margin: 0;
   }
-  /* For Webkit-based browsers (Chrome, Safari and Opera) */
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* For IE, Edge and Firefox */
-  .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
-  }
 }
 
 @layer components {
@@ -41,6 +31,11 @@
     border-radius: 0.375rem;
     font-size: 1rem;
     line-height: 1.5rem;
+  }
+
+  .scrollbar-style{
+    scrollbar-color: rgb(240 249 255) transparent;
+    scrollbar-width: thin;
   }
 
   .slider-button {

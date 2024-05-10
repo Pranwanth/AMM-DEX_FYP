@@ -18,6 +18,12 @@ export {
   getExistingPools,
   getPoolTokensFromAddress,
   getTotalPoolLiquidityToken,
+  getTokenPricesInPool,
   getUserLiquidityTokens,
-  calculateUserPoolData
+  calculateUserPoolData,
 } from './Pool'
+export {
+  TokenGraph,
+  buildTokenGraph,
+  findSwapPath
+} from './tokenGraph'
