@@ -18,8 +18,6 @@ async function main() {
   const allowanceAmount = ethers.parseEther("10000") // 10,000 tokens
 
   // createPoolParams
-  const amountADesired = ethers.parseEther("100"); // 100 tokens
-  const amountBDesired = ethers.parseEther("100"); // 100 tokens
   const amountAMin = 0; // Minimum amount of token A
   const amountBMin = 0; // Minimum amount of token B
   const deadline = Math.floor(Date.now() / 1000) + 60 * 10; // 10 minutes from now
@@ -39,14 +37,21 @@ async function main() {
 
   const numberOfPoolsToCreate: number = 5;
   for (let i = 0; i < numberOfPoolsToCreate; i++) {
+    const amountANum = Math.floor(Math.random() * 100)
+    const amountBNum = Math.floor(Math.random() * 100)
+    const amountADesired = ethers.parseEther(amountANum.toString(10));
+    const amountBDesired = ethers.parseEther(amountBNum.toString(10));
     const tokenA = tokenAddresses[i];
     const tokenB = tokenAddresses[(i + 1) % tokenAddresses.length]; // Ensure different tokens for each pool
     console.log(`Creating pool with tokens ${tokenA} and ${tokenB}...`);
     await factory.createPool(tokenA, tokenB);
-    console.log(`Pool created with tokens ${tokenA} and ${tokenB}`);
-
+    const poolAddr = await factory.getPool(tokenA, tokenB)
+    console.log(`Pool created with tokens ${tokenA} and ${tokenB} at ${poolAddr}`);
     await router.addLiquidity(tokenA, tokenB, amountADesired, amountBDesired, amountAMin, amountBMin, deployer.address, deadline);
-    console.log(`Liquidity added to pool ${i + 1}`);
+    console.log(`Liquidity added to pool ${i + 1}\namountA_added: ${amountADesired}\namountB_added: ${amountBDesired}`);
+    const poolContract = await ethers.getContractAt("Pool", poolAddr)
+    const [reserve0, reserve1] = await poolContract.getReserves()
+    console.log(`Pool Reserves\nreserve0: ${reserve0}\nreserve1: ${reserve1}`)
   }
 }
 
