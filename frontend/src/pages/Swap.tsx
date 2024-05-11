@@ -32,7 +32,7 @@ const Swap = () => {
   const [userChosenInputField, setUserChosenInputField] = useState<number | undefined>(undefined)
   const [swapPath, setSwapPath] = useState<string[]>([])
 
-  const { swapSlippage } = useSettingStore();
+  const { slippage } = useSettingStore();
   const { tokenGraph } = useTokenGraphStore();
 
   const handleSettings = (event: React.MouseEvent<HTMLElement>) => {
@@ -238,7 +238,7 @@ const Swap = () => {
         </InputFieldLabel>
         <div className="flex justify-between text-slate-500 py-4">
           <div>Slippage Tolerance</div>
-          <div className="text-l text-black font-bold">{`${swapSlippage}%`}</div>
+          <div className="text-l text-black font-bold">{`${slippage}%`}</div>
         </div>
         {(swapPath.length === 0 && tokenZero && tokenOne) && (
           <div className="text-red-600 py-4 text-center">

@@ -2,27 +2,24 @@ import React from 'react'
 import useSettingStore from '../store/useSettingStore'
 
 const SettingsPopoverContent = () => {
-
   const {
-    addLiquiditySlippage,
-    addLiquidityDeadline,
-    setAddLiquiditySlippage,
-    setAddLiquidityDeadline
+    slippage,
+    deadline,
+    setSlippage,
+    setDeadline
   } = useSettingStore()
 
 
   const handleSlippage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
     if (isNaN(Number(value))) return
-
-    setAddLiquiditySlippage(Number(value))
+    setSlippage(Number(value))
   }
 
   const handleDeadline = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
     if (isNaN(Number(value))) return
-
-    setAddLiquidityDeadline(Number(value))
+    setDeadline(Number(value))
   }
 
   return (
@@ -32,7 +29,7 @@ const SettingsPopoverContent = () => {
         <div className="flex justify-between items-center gap-2">
           <input
             type="number"
-            value={addLiquiditySlippage}
+            value={slippage}
             onChange={handleSlippage}
             className="block border focus:border-highlight text-right rounded-lg pr-2 w-16"
           />
@@ -46,7 +43,7 @@ const SettingsPopoverContent = () => {
         <div className="flex justify-between items-center gap-2">
           <input
             type="number"
-            value={addLiquidityDeadline}
+            value={deadline}
             onChange={handleDeadline}
             className="block border focus:border-highlight text-right rounded-lg pr-2 w-16"
           />

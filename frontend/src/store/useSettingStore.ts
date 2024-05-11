@@ -1,25 +1,17 @@
 import { create } from "zustand";
 
 interface SettingStore {
-  swapSlippage: number
-  addLiquiditySlippage: number
-  swapDeadline: number
-  addLiquidityDeadline: number
-  setSwapSlippage: (slippage: number) => void
-  setAddLiquiditySlippage: (slippage: number) => void
-  setSwapDeadline: (deadline: number) => void
-  setAddLiquidityDeadline: (deadline: number) => void
+  slippage: number,
+  deadline: number,
+  setSlippage: (slippage: number) => void
+  setDeadline: (deadline: number) => void
 }
 
 const useSettingStore = create<SettingStore>()((set) => ({
-  swapSlippage: 0.5,
-  addLiquiditySlippage: 0.5,
-  swapDeadline: 10,
-  addLiquidityDeadline: 10,
-  setSwapSlippage: (slippage) => set({ swapSlippage: slippage }),
-  setAddLiquiditySlippage: (slippage) => set({ addLiquiditySlippage: slippage }),
-  setSwapDeadline: (deadline) => set({ swapDeadline: deadline }),
-  setAddLiquidityDeadline: (deadline) => set({ addLiquidityDeadline: deadline })
+  slippage: 0.5,
+  deadline: 10,
+  setSlippage: (slippage) => set({ slippage: slippage }),
+  setDeadline: (deadline) => set({ deadline: deadline }),
 }));
 
 export default useSettingStore;
