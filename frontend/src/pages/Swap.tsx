@@ -115,7 +115,7 @@ const Swap = () => {
           if (userChosenInputField === 0) {
             await swapExactETHForTokens(
               "0",
-              [tokenZero.address, tokenOne.address],
+              swapPath,
               userAddress as string,
               Number.MAX_SAFE_INTEGER,
               tokenZeroValue
@@ -123,7 +123,7 @@ const Swap = () => {
           } else {
             await swapETHForExactTokens(
               tokenOneValue,
-              [tokenZero.address, tokenOne.address],
+              swapPath,
               userAddress as string,
               Number.MAX_SAFE_INTEGER,
               tokenZeroValue
@@ -135,7 +135,7 @@ const Swap = () => {
             await swapExactTokensForETH(
               tokenZeroValue,
               "0",
-              [tokenZero.address, tokenOne.address],
+              swapPath,
               userAddress as string,
               Number.MAX_SAFE_INTEGER
             );
@@ -143,7 +143,7 @@ const Swap = () => {
             await swapTokensForExactETH(
               tokenOneValue,
               tokenZeroValue,
-              [tokenZero.address, tokenOne.address],
+              swapPath,
               userAddress as string,
               Number.MAX_SAFE_INTEGER
             );
@@ -155,7 +155,7 @@ const Swap = () => {
             await swapExactTokensForTokens(
               tokenZeroValue,
               "0",
-              [tokenZero.address, tokenOne.address],
+              swapPath,
               userAddress as string,
               Number.MAX_SAFE_INTEGER
             );
@@ -164,7 +164,7 @@ const Swap = () => {
             await swapTokensForExactTokens(
               tokenOneValue,
               tokenZeroValue,
-              [tokenZero.address, tokenOne.address],
+              swapPath,
               userAddress as string,
               Number.MAX_SAFE_INTEGER
             );
@@ -190,6 +190,11 @@ const Swap = () => {
     getSwapPath()
   }, [tokenZero, tokenOne])
 
+  const changeTokenPosition = () => {
+    const initialTokenZero = tokenZero
+    setTokenZero(tokenOne)
+    setTokenOne(initialTokenZero)
+  }
 
   return (
     <Card className="mt-12 mx-auto w-128 relative bg-gray-50 p-8 rounded-sm">
@@ -230,7 +235,12 @@ const Swap = () => {
           <div>Slippage Tolerance</div>
           <div className="text-l text-black font-bold">{`${swapSlippage}%`}</div>
         </div>
-        <SwapTokenButton />
+        {(swapPath.length === 0 && tokenZero && tokenOne) && (
+          <div className="text-red-600 py-4 text-center">
+            <div>No swap path exists for this pair, please create a pool</div>
+          </div>
+        )}
+        <SwapTokenButton changeTokenPosition={changeTokenPosition} />
       </div>
       {!isConnected && <ConnectWalletButton />}
       {isConnected && (
@@ -241,7 +251,7 @@ const Swap = () => {
               Approve Token
             </button>
             :
-            <SwapActionButton handleClick={handleSwap} />
+            <SwapActionButton handleClick={handleSwap} disabled={swapPath.length === 0} />
           }
         </>
       )}

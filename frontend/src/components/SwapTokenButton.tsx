@@ -1,11 +1,13 @@
-import useTokenStore from "../store/useTokenStore";
+interface SwapTokenButtonProps {
+  changeTokenPosition: () => void
+}
 
-const SwapTokenButton = () => {
-  const { swapTokens } = useTokenStore();
+const SwapTokenButton = (props: SwapTokenButtonProps) => {
+  const { changeTokenPosition } = props;
   return (
     <div
       className="absolute top-[37%] left-[45%] h-10 w-10 bg-sky-50 rounded-xl border-4  border-white flex justify-center items-center"
-      onClick={swapTokens}
+      onClick={changeTokenPosition}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
