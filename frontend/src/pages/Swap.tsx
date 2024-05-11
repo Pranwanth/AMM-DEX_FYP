@@ -18,6 +18,7 @@ import { approveERC20 } from "../components/utils/helper/ERC20";
 import { createTokenApproveSuccessToastFromTx } from "../components/utils/toast";
 import useSettingStore from "../store/useSettingStore";
 import useTokenGraphStore from "../store/useTokenGraphStore";
+import { toast } from "react-toastify";
 
 const Swap = () => {
   const { isConnected, address: userAddress } = useAccount();
@@ -100,12 +101,12 @@ const Swap = () => {
     if (tokenZero && tokenOne && approved) {
       const isInputETH = tokenZero.ticker === "ETH";
       const isOutputETH = tokenOne.ticker === "ETH";
-
+      let tx = undefined
       try {
         if (isInputETH) {
           // Swapping ETH for tokens
           if (userChosenInputField === 0) {
-            await swapExactETHForTokens(
+            tx = await swapExactETHForTokens(
               "0",
               swapPath,
               userAddress as string,
@@ -113,7 +114,7 @@ const Swap = () => {
               tokenZeroValue
             );
           } else {
-            await swapETHForExactTokens(
+            tx = await swapETHForExactTokens(
               tokenOneValue,
               swapPath,
               userAddress as string,
@@ -124,7 +125,7 @@ const Swap = () => {
         } else if (isOutputETH) {
           // Swapping tokens for ETH
           if (userChosenInputField === 0) {
-            await swapExactTokensForETH(
+            tx = await swapExactTokensForETH(
               tokenZeroValue,
               "0",
               swapPath,
@@ -132,7 +133,7 @@ const Swap = () => {
               Number.MAX_SAFE_INTEGER
             );
           } else {
-            await swapTokensForExactETH(
+            tx = await swapTokensForExactETH(
               tokenOneValue,
               tokenZeroValue,
               swapPath,
@@ -144,7 +145,7 @@ const Swap = () => {
           // Standard token to token swap
           if (userChosenInputField === 0) {
             // Exact tokens for tokens
-            await swapExactTokensForTokens(
+            tx = await swapExactTokensForTokens(
               tokenZeroValue,
               "0",
               swapPath,
@@ -153,7 +154,7 @@ const Swap = () => {
             );
           } else {
             // Tokens for exact tokens
-            await swapTokensForExactTokens(
+            tx = await swapTokensForExactTokens(
               tokenOneValue,
               tokenZeroValue,
               swapPath,
@@ -162,10 +163,16 @@ const Swap = () => {
             );
           }
         }
-      } catch (error) {
+        if (tx) {
+          toast.success(`${tokenZero.ticker} swapped to ${tokenOne.ticker}`)
+        }
+        setApproved(false)
+      }
+      catch (error) {
         console.error("An error occurred during the swap:", error);
       }
-    } else {
+    }
+    else {
       console.error("Swap conditions not met: Missing input values, tokens, or approval.");
     }
   };
