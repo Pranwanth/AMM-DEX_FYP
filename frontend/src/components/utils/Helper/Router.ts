@@ -214,5 +214,17 @@ export async function swapETHForExactTokens(
   return tx
 }
 
+export async function getAmountsOut(amountIn: string, path: string[]): Promise<number[]> {
+  const router = await getRouterContract();
+  const amountsOut = await router.getAmountsOut(ethers.parseUnits(amountIn, 18), path);
+  return amountsOut.map((amount: bigint) => parseFloat(ethers.formatUnits(amount, 18)));
+}
+
+export async function getAmountsIn(amountOut: string, path: string[]): Promise<number[]> {
+  const router = await getRouterContract();
+  const amountOutBN = ethers.parseUnits(amountOut, 18);
+  const amountsIn = await router.getAmountsIn(amountOutBN, path);
+  return amountsIn.map((amount: bigint) => parseFloat(ethers.formatUnits(amount, 18)));
+}
 
 

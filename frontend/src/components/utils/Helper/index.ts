@@ -10,6 +10,8 @@ export {
   swapExactTokensForETH,
   swapExactTokensForTokens,
   swapTokensForExactETH,
+  getAmountsOut,
+  getAmountsIn
 } from './Router';
 export {
   getPoolAddress,

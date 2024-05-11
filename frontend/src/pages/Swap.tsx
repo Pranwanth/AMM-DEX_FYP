@@ -5,7 +5,7 @@ import Card from "../components/Card";
 import ConnectWalletButton from "../components/ConnectWalletButton";
 import TokenSelector from "../components/Dialog/TokenSelector";
 import { Token } from "../components/GlobalTypes";
-import InputField from "../components/Input/InputField";
+import { InputField, InputFieldLabel } from "../components/Input";
 import Popover from "../components/Popover/Popover";
 import SettingsButton from "../components/SettingsButton";
 import SettingsPopoverContent from "../components/SettingsPopoverContent";
@@ -13,7 +13,7 @@ import SwapActionButton from "../components/SwapActionButton";
 import SwapTokenButton from "../components/SwapTokenButton";
 import { ROUTER_ADDR } from "../components/utils/ContractAdresses";
 import { formatToSixSignificantDigits } from "../components/utils/common";
-import { findSwapPath, getTokenPricesInPool, swapETHForExactTokens, swapExactETHForTokens, swapExactTokensForETH, swapExactTokensForTokens, swapTokensForExactETH, swapTokensForExactTokens } from "../components/utils/helper";
+import { findSwapPath, getAmountsIn, getAmountsOut, swapETHForExactTokens, swapExactETHForTokens, swapExactTokensForETH, swapExactTokensForTokens, swapTokensForExactETH, swapTokensForExactTokens } from "../components/utils/helper";
 import { approveERC20 } from "../components/utils/helper/ERC20";
 import { createTokenApproveSuccessToastFromTx } from "../components/utils/toast";
 import useSettingStore from "../store/useSettingStore";
@@ -52,14 +52,6 @@ const Swap = () => {
     setTokenOne(token);
   };
 
-  function calculateOutputTokens(inputQuantity: number, priceOfTokenAInTokenB: number): number {
-    if (inputQuantity < 0 || priceOfTokenAInTokenB < 0) {
-      return 0
-    }
-    const outputQuantityOfTokenB = inputQuantity * priceOfTokenAInTokenB;
-    return outputQuantityOfTokenB;
-  }
-
   const onInputChange = async (key: "tokenZero" | "tokenOne", value: string) => {
     const numValue = Number(value);
 
@@ -73,18 +65,18 @@ const Swap = () => {
     if (key === "tokenZero") {
       setTokenZeroValue(value);
       setUserChosenInputField(0)
-      if (tokenZero && tokenOne) {
-        const tokenPriceObj = await getTokenPricesInPool(tokenZero.address, tokenOne.address)
-        const tokenOneQuantity = calculateOutputTokens(numValue, tokenPriceObj[tokenZero.address])
+      if (tokenZero && tokenOne && swapPath) {
+        const amountsOut = await getAmountsOut(value, swapPath)
+        const tokenOneQuantity = amountsOut[amountsOut.length - 1]
         setTokenOneValue(formatToSixSignificantDigits(tokenOneQuantity).toString(10))
       }
     } else {
       setTokenOneValue(value);
       setUserChosenInputField(1)
       if (tokenZero && tokenOne) {
-        const tokenPriceObj = await getTokenPricesInPool(tokenZero.address, tokenOne.address)
-        const tokenZeroQuantity = calculateOutputTokens(numValue, tokenPriceObj[tokenOne.address])
-        setTokenOneValue(formatToSixSignificantDigits(tokenZeroQuantity).toString(10))
+        const amountsIn = await getAmountsIn(value, swapPath)
+        const tokenZeroQuantity = amountsIn[0]
+        setTokenZeroValue(formatToSixSignificantDigits(tokenZeroQuantity).toString(10))
       }
     }
   };
@@ -210,27 +202,33 @@ const Swap = () => {
         </Popover>
       </div>
       <div>
-        <InputField
-          type="number"
-          min="0"
-          value={tokenZeroValue}
-          placeholder="0"
-          onChange={(event) => onInputChange("tokenZero", event.target.value)}
-        >
-          <TokenSelector
-            token={tokenZero}
-            tokenSelectHandler={selectTokenZero}
-          />
-        </InputField>
-        <InputField
-          type="number"
-          min="0"
-          placeholder="0"
-          value={tokenOneValue}
-          onChange={(event) => onInputChange("tokenOne", event.target.value)}
-        >
-          <TokenSelector token={tokenOne} tokenSelectHandler={selectTokenOne} />
-        </InputField>
+        <InputFieldLabel>
+          <div className="text-base text-secondaryText mb-2">You pay</div>
+          <InputField
+            type="number"
+            min="0"
+            value={tokenZeroValue}
+            placeholder="0"
+            onChange={(event) => onInputChange("tokenZero", event.target.value)}
+          >
+            <TokenSelector
+              token={tokenZero}
+              tokenSelectHandler={selectTokenZero}
+            />
+          </InputField>
+        </InputFieldLabel>
+        <InputFieldLabel>
+          <div className="text-base text-secondaryText mb-2">You receive</div>
+          <InputField
+            type="number"
+            min="0"
+            placeholder="0"
+            value={tokenOneValue}
+            onChange={(event) => onInputChange("tokenOne", event.target.value)}
+          >
+            <TokenSelector token={tokenOne} tokenSelectHandler={selectTokenOne} />
+          </InputField>
+        </InputFieldLabel>
         <div className="flex justify-between text-slate-500 py-4">
           <div>Slippage Tolerance</div>
           <div className="text-l text-black font-bold">{`${swapSlippage}%`}</div>
